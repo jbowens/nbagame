@@ -16,6 +16,15 @@ type APIClient struct {
 	Requester *endpoints.Requester
 }
 
+// AllTeams returns a slice of all the current NBA teams.
+func (c *APIClient) AllTeams() ([]*data.Team, error) {
+	var resp results.FranchiseHistoryResponse
+	err := c.Requester.Request("franchisehistory", &endpoints.FranchiseHistoryParams{
+		LeagueID: "00",
+	}, &resp)
+	return resp.Present(), err
+}
+
 // PlayersForSeason retrieves a slice of all players in the NBA in the current
 // season.
 func (c *APIClient) PlayersForCurrentSeason() ([]*data.Player, error) {
