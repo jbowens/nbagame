@@ -1,6 +1,10 @@
 package endpoints
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/jbowens/nbagame/results"
+)
 
 type testRequestParams struct {
 	Season      string `json:"Season"`
@@ -32,11 +36,11 @@ func TestRequest(t *testing.T) {
 		LeagueID: "00",
 	}
 
-	bytes, err := DefaultRequester.Request("commonallplayers", params)
-	if err != nil {
+	var resp results.CommonAllPlayersResponse
+	if err := DefaultRequester.Request("commonallplayers", params, &resp); err != nil {
 		t.Fatal(err)
 	}
-	if len(bytes) == 0 {
+	if len(resp.CommonAllPlayers) == 0 {
 		t.Error("Empty response for commonallplayers request.")
 	}
 }
