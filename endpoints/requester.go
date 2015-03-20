@@ -7,8 +7,6 @@ import (
 	"net/url"
 	"reflect"
 	"strconv"
-
-	"github.com/jbowens/nbagame/results"
 )
 
 const (
@@ -69,7 +67,7 @@ func (r *Requester) Request(endpoint string, params interface{}, resp interface{
 	if err := httpResponse.Body.Close(); err != nil {
 		return err
 	}
-	response, err := results.NewResponse(buf.Bytes())
+	response, err := NewResponse(buf.Bytes())
 	if err != nil {
 		return err
 	}

@@ -3,7 +3,6 @@ package nbagame
 import (
 	"github.com/jbowens/nbagame/data"
 	"github.com/jbowens/nbagame/endpoints"
-	"github.com/jbowens/nbagame/results"
 )
 
 var (
@@ -18,7 +17,7 @@ type APIClient struct {
 
 // AllTeams returns a slice of all the current NBA teams.
 func (c *APIClient) AllTeams() ([]*data.Team, error) {
-	var resp results.FranchiseHistoryResponse
+	var resp endpoints.FranchiseHistoryResponse
 	err := c.Requester.Request("franchisehistory", &endpoints.FranchiseHistoryParams{
 		LeagueID: "00",
 	}, &resp)
@@ -33,7 +32,7 @@ func (c *APIClient) PlayersForCurrentSeason() ([]*data.Player, error) {
 		Season:              string(data.CurrentSeason),
 		IsOnlyCurrentSeason: 1,
 	}
-	var resp results.CommonAllPlayersResponse
+	var resp endpoints.CommonAllPlayersResponse
 	if err := c.Requester.Request("commonallplayers", &params, &resp); err != nil {
 		return nil, err
 	}
@@ -47,7 +46,7 @@ func (c *APIClient) AllPlayers() ([]*data.Player, error) {
 		Season:              string(data.CurrentSeason),
 		IsOnlyCurrentSeason: 0,
 	}
-	var resp results.CommonAllPlayersResponse
+	var resp endpoints.CommonAllPlayersResponse
 	if err := c.Requester.Request("commonallplayers", &params, &resp); err != nil {
 		return nil, err
 	}

@@ -2,8 +2,6 @@ package endpoints
 
 import (
 	"testing"
-
-	"github.com/jbowens/nbagame/results"
 )
 
 type testRequestParams struct {
@@ -36,7 +34,7 @@ func TestRequest(t *testing.T) {
 		LeagueID: "00",
 	}
 
-	var resp results.CommonAllPlayersResponse
+	var resp CommonAllPlayersResponse
 	if err := DefaultRequester.Request("commonallplayers", params, &resp); err != nil {
 		t.Fatal(err)
 	}
