@@ -6,6 +6,12 @@ import (
 	"github.com/jbowens/nbagame/data"
 )
 
+// CommonAllPlayersResponse is the type for all result sets returned by the
+// 'commonallplayers' resource.
+type CommonAllPlayersResponse struct {
+	CommonAllPlayers []*CommonAllPlayersRow `nbagame:"CommonAllPlayers"`
+}
+
 // CommonAllPlayersRow represents the schema returned for 'CommonAllPlayers' result
 // sets, from the 'commonallplayers' resource.
 //

@@ -28,14 +28,14 @@ func (c *APIClient) AllPlayers() ([]*data.Player, error) {
 		return nil, err
 	}
 
-	var playerRows []*results.CommonAllPlayersRow
-	if err := response.ResultSets[0].Decode(&playerRows); err != nil {
+	var resp results.CommonAllPlayersResponse
+	if err := response.Decode(&resp); err != nil {
 		return nil, err
 	}
-	players := make([]*data.Player, len(playerRows))
-	for idx, row := range playerRows {
+
+	players := make([]*data.Player, len(resp.CommonAllPlayers))
+	for idx, row := range resp.CommonAllPlayers {
 		players[idx] = row.ToPlayer()
 	}
-
 	return players, err
 }

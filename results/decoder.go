@@ -10,12 +10,6 @@ const (
 	tagKey = "nbagame"
 )
 
-var (
-	resultSetNameToType = map[string]interface{}{
-		"common_all_players": CommonAllPlayersRow{},
-	}
-)
-
 // Response represents a results from the stats.nba.com API.
 type Response struct {
 	Resource   string                 `json:"resource"`
@@ -36,6 +30,47 @@ type ResultSet struct {
 func NewResponse(body []byte) (*Response, error) {
 	var resp Response
 	return &resp, json.Unmarshal(body, &resp)
+}
+
+// ResultSetByName retrieves the result set from the response by its name.
+func (r *Response) ResultSetByName(name string) *ResultSet {
+	for _, resultSet := range r.ResultSets {
+		if resultSet.Name == name {
+			return resultSet
+		}
+	}
+	return nil
+}
+
+// Decode decodes the Response into an appropriate resource-specific Response
+// struct.
+func (r *Response) Decode(v interface{}) error {
+	rv := reflect.ValueOf(v)
+	if rv.Kind() != reflect.Ptr || rv.IsNil() {
+		return &InvalidDecodeError{rv}
+	}
+	rv = rv.Elem()
+
+	for i := 0; i < rv.NumField(); i++ {
+		fieldValue := rv.Field(i)
+		fieldType := rv.Type().Field(i)
+
+		resultSetName := fieldType.Tag.Get(tagKey)
+		if resultSetName == "" {
+			// Skip any fields that don't have a tag.
+			continue
+		}
+
+		resultSet := r.ResultSetByName(resultSetName)
+		if resultSet == nil {
+			continue
+		}
+
+		if err := resultSet.Decode(fieldValue.Addr().Interface()); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Decode decodes the ResultSet into a slice of the appropriate result set
