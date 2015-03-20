@@ -49,7 +49,9 @@ func (r *Response) Decode(v interface{}) error {
 	if rv.Kind() != reflect.Ptr || rv.IsNil() {
 		return &InvalidDecodeError{rv}
 	}
-	rv = rv.Elem()
+	for rv.Kind() == reflect.Ptr || rv.Kind() == reflect.Interface {
+		rv = rv.Elem()
+	}
 
 	for i := 0; i < rv.NumField(); i++ {
 		fieldValue := rv.Field(i)

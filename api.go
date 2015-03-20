@@ -23,13 +23,8 @@ func (c *APIClient) AllPlayers() ([]*data.Player, error) {
 		Season:              "2014-15",
 		IsOnlyCurrentSeason: 0,
 	}
-	response, err := c.Requester.Request("commonallplayers", &params)
-	if err != nil {
-		return nil, err
-	}
-
 	var resp results.CommonAllPlayersResponse
-	if err := response.Decode(&resp); err != nil {
+	if err := c.Requester.Request("commonallplayers", &params, &resp); err != nil {
 		return nil, err
 	}
 
@@ -37,5 +32,5 @@ func (c *APIClient) AllPlayers() ([]*data.Player, error) {
 	for idx, row := range resp.CommonAllPlayers {
 		players[idx] = row.ToPlayer()
 	}
-	return players, err
+	return players, nil
 }

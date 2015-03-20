@@ -36,40 +36,45 @@ func (r *Requester) EndpointURL(endpoint string) string {
 
 // Request performs a request against the given endpoint with the provided
 // parameters.
-func (r *Requester) Request(endpoint string, params interface{}) (*results.Response, error) {
+func (r *Requester) Request(endpoint string, params interface{}, resp interface{}) error {
 	endpointURL, err := url.Parse(r.EndpointURL(endpoint))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	urlParams, err := r.makeParams(params)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	endpointURL.RawQuery = urlParams.Encode()
 
 	req, err := http.NewRequest("GET", endpointURL.String(), nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	resp, err := r.client.Do(req)
+	httpResponse, err := r.client.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Endpoint `%s` returned status `%s`", endpointURL, resp.Status)
+	if httpResponse.StatusCode != http.StatusOK {
+		return fmt.Errorf("Endpoint `%s` returned status `%s`", endpointURL, httpResponse.Status)
 	}
 
 	buf := new(bytes.Buffer)
-	_, err = buf.ReadFrom(resp.Body)
+	_, err = buf.ReadFrom(httpResponse.Body)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if err := resp.Body.Close(); err != nil {
-		return nil, err
+	if err := httpResponse.Body.Close(); err != nil {
+		return err
 	}
-	return results.NewResponse(buf.Bytes())
+	response, err := results.NewResponse(buf.Bytes())
+	if err != nil {
+		return err
+	}
+
+	return response.Decode(&resp)
 }
 
 func (r *Requester) makeParams(paramStruct interface{}) (url.Values, error) {
