@@ -23,12 +23,7 @@ func (c *APIClient) AllPlayers() ([]*data.Player, error) {
 		Season:              "2014-15",
 		IsOnlyCurrentSeason: 0,
 	}
-	bytes, err := c.Requester.Request("commonallplayers", &params)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := results.NewResponse(bytes)
+	response, err := c.Requester.Request("commonallplayers", &params)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +32,6 @@ func (c *APIClient) AllPlayers() ([]*data.Player, error) {
 	if err := response.ResultSets[0].Decode(&playerRows); err != nil {
 		return nil, err
 	}
-
 	players := make([]*data.Player, len(playerRows))
 	for idx, row := range playerRows {
 		players[idx] = row.ToPlayer()

@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"reflect"
 	"strconv"
+
+	"github.com/jbowens/nbagame/results"
 )
 
 const (
@@ -34,7 +36,7 @@ func (r *Requester) EndpointURL(endpoint string) string {
 
 // Request performs a request against the given endpoint with the provided
 // parameters.
-func (r *Requester) Request(endpoint string, params interface{}) ([]byte, error) {
+func (r *Requester) Request(endpoint string, params interface{}) (*results.Response, error) {
 	endpointURL, err := url.Parse(r.EndpointURL(endpoint))
 	if err != nil {
 		return nil, err
@@ -64,9 +66,10 @@ func (r *Requester) Request(endpoint string, params interface{}) ([]byte, error)
 	if err != nil {
 		return nil, err
 	}
-
-	err = resp.Body.Close()
-	return buf.Bytes(), err
+	if err := resp.Body.Close(); err != nil {
+		return nil, err
+	}
+	return results.NewResponse(buf.Bytes())
 }
 
 func (r *Requester) makeParams(paramStruct interface{}) (url.Values, error) {
