@@ -20,7 +20,7 @@ type APIClient struct {
 func (c *APIClient) AllPlayers() ([]*data.Player, error) {
 	params := endpoints.CommonAllPlayersParams{
 		LeagueID:            "00",
-		Season:              "2014-15",
+		Season:              string(data.CurrentSeason),
 		IsOnlyCurrentSeason: 0,
 	}
 	var resp results.CommonAllPlayersResponse
