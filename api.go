@@ -24,7 +24,7 @@ func (c *APIClient) AllTeams() ([]*data.Team, error) {
 	return resp.Present(), err
 }
 
-// PlayersForSeason retrieves a slice of all players in the NBA in the current
+// PlayersForCurrentSeason retrieves a slice of all players in the NBA in the current
 // season.
 func (c *APIClient) PlayersForCurrentSeason() ([]*data.Player, error) {
 	params := endpoints.CommonAllPlayersParams{
