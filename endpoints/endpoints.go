@@ -15,7 +15,7 @@ const (
 
 // DefaultRequester is the default Requester using default values for the
 // endpoints.
-var DefaultRequester = &Requester{
+var DefaultRequester = Requester{
 	Domain:     NBAStatsDomain,
 	PathPrefix: "stats",
 }
@@ -72,6 +72,10 @@ func (r *Requester) Request(endpoint string, params interface{}) ([]byte, error)
 func (r *Requester) makeParams(paramStruct interface{}) (url.Values, error) {
 	params := url.Values{}
 	rv := reflect.ValueOf(paramStruct)
+	// Dereference the pointer if it's a pointer.
+	for rv.Kind() == reflect.Ptr {
+		rv = rv.Elem()
+	}
 
 	for i := 0; i < rv.NumField(); i++ {
 		fieldValue := rv.Field(i)

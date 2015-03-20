@@ -1,6 +1,10 @@
 package results
 
-import "github.com/jbowens/nbagame/data"
+import (
+	"strings"
+
+	"github.com/jbowens/nbagame/data"
+)
 
 // CommonAllPlayersRow represents the schema returned for 'CommonAllPlayers' result
 // sets, from the 'commonallplayers' resource.
@@ -18,11 +22,25 @@ type CommonAllPlayersRow struct {
 
 // ToPlayer converts a CommonAllPlayersRow to a Player data struct.
 func (row *CommonAllPlayersRow) ToPlayer() *data.Player {
-	return &data.Player{
+	player := data.Player{
 		ID:              row.PersonID,
 		RosterStatus:    data.RosterStatus(row.RosterStatus),
 		CareerStartYear: row.FromYear,
 		CareerEndYear:   row.ToYear,
 		PlayerCode:      row.PlayerCode,
 	}
+
+	namePieces := strings.Split(row.FullName, ",")
+	if len(namePieces) < 2 {
+		// Sometimes names are missing commas...
+		namePieces = strings.SplitN(row.FullName, " ", 2)
+	}
+	if len(namePieces) < 2 {
+		// If there are no commas or spaces, there's not much we can do.
+		namePieces = []string{row.FullName, ""}
+	}
+
+	player.FirstName = strings.TrimSpace(namePieces[1])
+	player.LastName = strings.TrimSpace(namePieces[0])
+	return &player
 }

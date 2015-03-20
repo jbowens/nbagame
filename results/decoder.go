@@ -1,6 +1,7 @@
 package results
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 )
@@ -28,6 +29,13 @@ type ResultSet struct {
 	Name    string          `json:"name"`
 	Headers []string        `json:"headers"`
 	RowSet  [][]interface{} `json:"rowSet"`
+}
+
+// NewResponse constructs a new Response from a byte array contianing the returned
+// json body.
+func NewResponse(body []byte) (*Response, error) {
+	var resp Response
+	return &resp, json.Unmarshal(body, &resp)
 }
 
 // Decode decodes the ResultSet into a slice of the appropriate result set
@@ -86,7 +94,16 @@ func populateValue(v reflect.Value, row []interface{}, headers map[string]int) e
 			return fmt.Errorf("Header `%s` does not exist in %+v", fieldHeader, headers)
 		}
 
-		fieldValue.Set(reflect.ValueOf(row[headerIndex]))
+		rowValue := reflect.ValueOf(row[headerIndex])
+		if !rowValue.IsValid() {
+			continue
+		}
+		rowValueType := rowValue.Type()
+		fieldValueType := fieldValue.Type()
+		if !rowValueType.ConvertibleTo(fieldValueType) {
+			return fmt.Errorf("Cannot convert `%v` to `%v`", rowValue.Type(), fieldValue.Type())
+		}
+		fieldValue.Set(rowValue.Convert(fieldValue.Type()))
 	}
 	return nil
 }
