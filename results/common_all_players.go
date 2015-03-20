@@ -12,6 +12,15 @@ type CommonAllPlayersResponse struct {
 	CommonAllPlayers []*CommonAllPlayersRow `nbagame:"CommonAllPlayers"`
 }
 
+// Present returns the response as a slice of players.
+func (r *CommonAllPlayersResponse) Present() []*data.Player {
+	players := make([]*data.Player, len(r.CommonAllPlayers))
+	for idx, row := range r.CommonAllPlayers {
+		players[idx] = row.ToPlayer()
+	}
+	return players
+}
+
 // CommonAllPlayersRow represents the schema returned for 'CommonAllPlayers' result
 // sets, from the 'commonallplayers' resource.
 //

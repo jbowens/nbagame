@@ -16,7 +16,22 @@ type APIClient struct {
 	Requester *endpoints.Requester
 }
 
-// AllPlayers returns a slice of all players.
+// PlayersForSeason retrieves a slice of all players in the NBA in the current
+// season.
+func (c *APIClient) PlayersForCurrentSeason() ([]*data.Player, error) {
+	params := endpoints.CommonAllPlayersParams{
+		LeagueID:            "00",
+		Season:              string(data.CurrentSeason),
+		IsOnlyCurrentSeason: 1,
+	}
+	var resp results.CommonAllPlayersResponse
+	if err := c.Requester.Request("commonallplayers", &params, &resp); err != nil {
+		return nil, err
+	}
+	return resp.Present(), nil
+}
+
+// AllPlayers returns a slice of all players from all time.
 func (c *APIClient) AllPlayers() ([]*data.Player, error) {
 	params := endpoints.CommonAllPlayersParams{
 		LeagueID:            "00",
@@ -27,10 +42,5 @@ func (c *APIClient) AllPlayers() ([]*data.Player, error) {
 	if err := c.Requester.Request("commonallplayers", &params, &resp); err != nil {
 		return nil, err
 	}
-
-	players := make([]*data.Player, len(resp.CommonAllPlayers))
-	for idx, row := range resp.CommonAllPlayers {
-		players[idx] = row.ToPlayer()
-	}
-	return players, nil
+	return resp.Present(), nil
 }

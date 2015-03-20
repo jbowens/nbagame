@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	allPlayers, err := nbagame.API.AllPlayers()
+	allPlayers, err := nbagame.API.PlayersForCurrentSeason()
 	if err != nil {
 		panic("All players error: " + err.Error())
 	}
