@@ -52,3 +52,20 @@ func (c *APIClient) AllPlayers() ([]*data.Player, error) {
 	}
 	return resp.Present(), nil
 }
+
+// PlayerDetails returns detailed information about a player. It does not include
+// stats about the player's performance.
+func (c *APIClient) PlayerDetails(playerID int) (*data.PlayerDetails, error) {
+	var resp endpoints.CommonPlayerInfoResponse
+	if err := c.Requester.Request("commonplayerinfo", &endpoints.CommonPlayerInfoParams{
+		LeagueID: "00",
+		PlayerID: playerID,
+	}, &resp); err != nil {
+		return nil, err
+	}
+
+	if len(resp.CommonPlayerInfo) == 0 {
+		return nil, nil
+	}
+	return resp.CommonPlayerInfo[0].ToPlayerDetails(), nil
+}

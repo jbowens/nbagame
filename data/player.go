@@ -1,5 +1,7 @@
 package data
 
+import "time"
+
 // RosterStatus indicates whether a player is active on a roster.
 type RosterStatus int
 
@@ -10,7 +12,7 @@ const (
 	Active
 )
 
-// Player holds information about an NBA player.
+// Player holds basic, identifying information about an NBA player.
 type Player struct {
 	ID              int
 	FirstName       string
@@ -19,4 +21,27 @@ type Player struct {
 	CareerStartYear string
 	CareerEndYear   string
 	PlayerCode      string
+}
+
+// PlayerDetails contains detailed information about an NBA player.
+type PlayerDetails struct {
+	PlayerID         int
+	FirstName        string
+	LastName         string
+	Birthdate        *time.Time
+	School           string
+	Country          string
+	Height           int
+	Weight           int
+	SeasonExperience int
+	Jersey           string
+	Position         string
+	RosterStatus     RosterStatus
+	TeamID           int
+	TeamName         string
+	TeamAbbreviation string
+	TeamCity         string
+	CareerStartYear  string
+	CareerEndYear    string
+	DLeague          bool
 }

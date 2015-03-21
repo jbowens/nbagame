@@ -12,9 +12,9 @@ const (
 
 // Response represents a results from the stats.nba.com API.
 type Response struct {
-	Resource   string                 `json:"resource"`
-	Parameters map[string]interface{} `json:"parameters"`
-	ResultSets []*ResultSet           `json:"resultSets"`
+	Resource   string       `json:"resource"`
+	Parameters interface{}  `json:"parameters"`
+	ResultSets []*ResultSet `json:"resultSets"`
 }
 
 // ResultSet is a set of results returned for a resource from the stats.nba.com

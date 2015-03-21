@@ -28,6 +28,15 @@ func printAllTeams() {
 	}
 }
 
+func printPlayerDetails(playerID int) {
+	playerDetails, err := nbagame.API.PlayerDetails(playerID)
+	if err != nil {
+		panic("Player Details error: " + err.Error())
+	}
+
+	fmt.Printf("%+v\n", playerDetails)
+}
+
 func main() {
-	printAllTeams()
+	printPlayerDetails(202322)
 }
