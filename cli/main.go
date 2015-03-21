@@ -7,7 +7,7 @@ import (
 )
 
 func printAllPlayers() {
-	allPlayers, err := nbagame.API.PlayersForCurrentSeason()
+	allPlayers, err := nbagame.API.Players.All()
 	if err != nil {
 		panic("All players error: " + err.Error())
 	}
@@ -18,7 +18,7 @@ func printAllPlayers() {
 }
 
 func printAllTeams() {
-	allTeams, err := nbagame.API.AllTeams()
+	allTeams, err := nbagame.API.Teams.All()
 	if err != nil {
 		panic("All teams error: " + err.Error())
 	}
@@ -29,7 +29,7 @@ func printAllTeams() {
 }
 
 func printPlayerDetails(playerID int) {
-	playerDetails, err := nbagame.API.PlayerDetails(playerID)
+	playerDetails, err := nbagame.API.Players.Details(playerID)
 	if err != nil {
 		panic("Player Details error: " + err.Error())
 	}

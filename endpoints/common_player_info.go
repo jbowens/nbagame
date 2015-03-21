@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	birthdateFormat = "2006-01-02T15:04:05"
+	dateFormat = "2006-01-02T15:04:05"
 )
 
 // CommonPlayerInfoParams defines parameters for a CommonPlayerInfo request.
@@ -72,7 +72,7 @@ func (r *CommonPlayerInfoRow) ToPlayerDetails() *data.PlayerDetails {
 	}
 
 	// Convert birthdate string into a time.Time
-	bday, err := time.Parse(birthdateFormat, r.Birthdate)
+	bday, err := time.Parse(dateFormat, r.Birthdate)
 	if err == nil {
 		playerDetails.Birthdate = &bday
 	}
