@@ -94,7 +94,7 @@ func (rs *ResultSet) Decode(v interface{}) error {
 	headers := rs.makeHeaderMap()
 	for _, row := range rs.RowSet {
 		if len(row) != len(rs.Headers) {
-			return fmt.Errorf("ResultSet headers contain %v columns, row contains %v", len(rs.Headers), len(row))
+			return fmt.Errorf("the result set headers contain %v columns, row contains %v", len(rs.Headers), len(row))
 		}
 
 		newValue := reflect.New(sliceType)
@@ -128,7 +128,7 @@ func populateValue(v reflect.Value, row []interface{}, headers map[string]int) e
 
 		headerIndex, ok := headers[fieldHeader]
 		if !ok {
-			return fmt.Errorf("Header `%s` does not exist in %+v", fieldHeader, headers)
+			return fmt.Errorf("header `%s` does not exist in %+v", fieldHeader, headers)
 		}
 
 		rowValue := reflect.ValueOf(row[headerIndex])
@@ -138,7 +138,7 @@ func populateValue(v reflect.Value, row []interface{}, headers map[string]int) e
 		rowValueType := rowValue.Type()
 		fieldValueType := fieldValue.Type()
 		if !rowValueType.ConvertibleTo(fieldValueType) {
-			return fmt.Errorf("Cannot convert `%v` to `%v`", rowValue.Type(), fieldValue.Type())
+			return fmt.Errorf("cannot convert `%v` to `%v`", rowValue.Type(), fieldValue.Type())
 		}
 		fieldValue.Set(rowValue.Convert(fieldValue.Type()))
 	}

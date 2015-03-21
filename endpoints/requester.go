@@ -56,7 +56,7 @@ func (r *Requester) Request(endpoint string, params interface{}, resp interface{
 	}
 
 	if httpResponse.StatusCode != http.StatusOK {
-		return fmt.Errorf("Endpoint `%s` returned status `%s`", endpointURL, httpResponse.Status)
+		return fmt.Errorf("endpoint `%s` returned status `%s`", endpointURL, httpResponse.Status)
 	}
 
 	buf := new(bytes.Buffer)
@@ -102,7 +102,7 @@ func (r *Requester) makeParams(paramStruct interface{}) (url.Values, error) {
 			continue
 		}
 
-		return nil, fmt.Errorf("Unsupported request parameter type: %s for tag `%s`", fieldValue.Kind(), fieldHeader)
+		return nil, fmt.Errorf("unsupported request parameter type: %s for tag `%s`", fieldValue.Kind(), fieldHeader)
 	}
 
 	return params, nil
