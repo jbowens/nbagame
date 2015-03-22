@@ -14,23 +14,23 @@ func init() {
 	API = APIClient{
 		Requester: &endpoints.DefaultRequester,
 	}
-	API.Teams = &teamsClient{client: &API}
-	API.Players = &playersClient{client: &API}
+	API.Teams = &Teams{client: &API}
+	API.Players = &Players{client: &API}
 }
 
 // APIClient is the master API object for interating with the API.
 type APIClient struct {
 	Requester *endpoints.Requester
-	Teams     *teamsClient
-	Players   *playersClient
+	Teams     *Teams
+	Players   *Players
 }
 
-type teamsClient struct {
+type Teams struct {
 	client *APIClient
 }
 
 // All returns a slice of all the current NBA teams.
-func (c *teamsClient) All() ([]*data.Team, error) {
+func (c *Teams) All() ([]*data.Team, error) {
 	var resp endpoints.FranchiseHistoryResponse
 	err := c.client.Requester.Request("franchisehistory", &endpoints.FranchiseHistoryParams{
 		LeagueID: "00",
@@ -38,12 +38,12 @@ func (c *teamsClient) All() ([]*data.Team, error) {
 	return resp.Present(), err
 }
 
-type playersClient struct {
+type Players struct {
 	client *APIClient
 }
 
 // All retrieves a slice of all players in the NBA in the current season.
-func (c *playersClient) All() ([]*data.Player, error) {
+func (c *Players) All() ([]*data.Player, error) {
 	params := endpoints.CommonAllPlayersParams{
 		LeagueID:            "00",
 		Season:              string(data.CurrentSeason),
@@ -57,7 +57,7 @@ func (c *playersClient) All() ([]*data.Player, error) {
 }
 
 // Historical returns a slice of all players from all time.
-func (c *playersClient) Historical() ([]*data.Player, error) {
+func (c *Players) Historical() ([]*data.Player, error) {
 	params := endpoints.CommonAllPlayersParams{
 		LeagueID:            "00",
 		Season:              string(data.CurrentSeason),
@@ -72,7 +72,7 @@ func (c *playersClient) Historical() ([]*data.Player, error) {
 
 // Details returns detailed information about a player. It does not include
 // stats about the player's performance.
-func (c *playersClient) Details(playerID int) (*data.PlayerDetails, error) {
+func (c *Players) Details(playerID int) (*data.PlayerDetails, error) {
 	var resp endpoints.CommonPlayerInfoResponse
 	if err := c.client.Requester.Request("commonplayerinfo", &endpoints.CommonPlayerInfoParams{
 		LeagueID: "00",
