@@ -20,5 +20,5 @@ type Game struct {
 	VisitorTeamID     int
 	Season            Season
 	Status            GameStatus
-	LastMeetingGameID int
+	LastMeetingGameID GameID
 }
