@@ -16,6 +16,7 @@ func init() {
 	}
 	API.Teams = &Teams{client: &API}
 	API.Players = &Players{client: &API}
+	API.Games = &Games{client: &API}
 }
 
 // APIClient is the master API object for interating with the API.
@@ -23,6 +24,7 @@ type APIClient struct {
 	Requester *endpoints.Requester
 	Teams     *Teams
 	Players   *Players
+	Games     *Games
 }
 
 type Teams struct {
@@ -46,7 +48,7 @@ type Players struct {
 func (c *Players) All() ([]*data.Player, error) {
 	params := endpoints.CommonAllPlayersParams{
 		LeagueID:            "00",
-		Season:              string(data.CurrentSeason),
+		Season:              data.CurrentSeason.String(),
 		IsOnlyCurrentSeason: 1,
 	}
 	var resp endpoints.CommonAllPlayersResponse
@@ -60,7 +62,7 @@ func (c *Players) All() ([]*data.Player, error) {
 func (c *Players) Historical() ([]*data.Player, error) {
 	params := endpoints.CommonAllPlayersParams{
 		LeagueID:            "00",
-		Season:              string(data.CurrentSeason),
+		Season:              data.CurrentSeason.String(),
 		IsOnlyCurrentSeason: 0,
 	}
 	var resp endpoints.CommonAllPlayersResponse
@@ -85,4 +87,32 @@ func (c *Players) Details(playerID int) (*data.PlayerDetails, error) {
 		return nil, nil
 	}
 	return resp.CommonPlayerInfo[0].ToPlayerDetails(), nil
+}
+
+type Games struct {
+	client *APIClient
+}
+
+// BoxScore returns the box score for the given game.
+func (c *Games) BoxScore(gameID string) ([]*data.TeamStats, []*data.PlayerStats, error) {
+	var resp endpoints.BoxScoreTraditionalResponse
+	if err := c.client.Requester.Request("boxscoretraditionalv2", &endpoints.BoxScoreTraditionalParams{
+		GameID:      gameID,
+		Season:      data.CurrentSeason.String(),
+		SeasonType:  "Regular Season",
+		StartPeriod: 1,
+		EndPeriod:   10,
+		StartRange:  0,
+		EndRange:    28800,
+		RangeType:   2,
+	}, &resp); err != nil {
+		return nil, nil, err
+	}
+
+	if len(resp.TeamStats) == 0 {
+		return nil, nil, nil
+	}
+
+	teamStats, playerStats := resp.ToData()
+	return teamStats, playerStats, nil
 }

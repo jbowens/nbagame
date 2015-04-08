@@ -31,7 +31,7 @@ type TeamGameLogRow struct {
 	FieldGoalPercentage    float64 `nbagame:"FG_PCT"`
 	ThreePointersMade      int     `nbagame:"FG3M"`
 	ThreePointersAttempted int     `nbagame:"FG3A"`
-	ThreePointPercentage   float64 `nbagame:FG3_PCT"`
+	ThreePointPercentage   float64 `nbagame:"FG3_PCT"`
 	FreeThrowsMade         int     `nbagame:"FTM"`
 	FreeThrowsAttempted    int     `nbagame:"FTA"`
 	FreeThrowPercentage    float64 `nbagame:"FT_PCT"`

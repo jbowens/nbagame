@@ -50,3 +50,8 @@ func (s Season) Previous() Season {
 func (s Season) Next() Season {
 	return s.AddYears(1)
 }
+
+// String returns a string representation of the season.
+func (s Season) String() string {
+	return string(s)
+}

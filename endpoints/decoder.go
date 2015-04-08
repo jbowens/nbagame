@@ -138,7 +138,7 @@ func populateValue(v reflect.Value, row []interface{}, headers map[string]int) e
 		rowValueType := rowValue.Type()
 		fieldValueType := fieldValue.Type()
 		if !rowValueType.ConvertibleTo(fieldValueType) {
-			return fmt.Errorf("cannot convert `%v` to `%v`", rowValue.Type(), fieldValue.Type())
+			return fmt.Errorf("cannot convert `%v` to `%v` for %s", rowValue.Type(), fieldValue.Type(), fieldHeader)
 		}
 		fieldValue.Set(rowValue.Convert(fieldValue.Type()))
 	}
