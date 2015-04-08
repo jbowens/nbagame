@@ -60,8 +60,7 @@ func (r *Requester) Request(endpoint string, params interface{}, resp interface{
 	}
 
 	buf := new(bytes.Buffer)
-	_, err = buf.ReadFrom(httpResponse.Body)
-	if err != nil {
+	if _, err = buf.ReadFrom(httpResponse.Body); err != nil {
 		return err
 	}
 	if err := httpResponse.Body.Close(); err != nil {
