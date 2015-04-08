@@ -86,7 +86,7 @@ func (r *TeamStatsRow) ToTeamStats() *data.TeamStats {
 
 // StatLine contains a summary of statistics.
 type StatLine struct {
-	MinutesPlayed          int     `nbagame:"MIN"`
+	MinutesPlayed          string  `nbagame:"MIN"`
 	FieldGoalsMade         int     `nbagame:"FGM"`
 	FieldGoalsAttempted    int     `nbagame:"FGA"`
 	FieldGoalPercentage    float64 `nbagame:"FG_PCT"`

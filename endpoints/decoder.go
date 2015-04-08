@@ -120,6 +120,14 @@ func populateValue(v reflect.Value, row []interface{}, headers map[string]int) e
 		fieldValue := v.Field(i)
 		fieldType := v.Type().Field(i)
 
+		if fieldValue.Kind() == reflect.Struct {
+			// Decode into any embedded structs too
+			if err := populateValue(fieldValue, row, headers); err != nil {
+				return err
+			}
+			continue
+		}
+
 		fieldHeader := fieldType.Tag.Get(tagKey)
 		if fieldHeader == "" {
 			// Skip any fields that don't have a tag.

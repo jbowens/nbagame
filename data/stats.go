@@ -23,7 +23,7 @@ type PlayerStats struct {
 // that provide additional context about who the stats apply to and over what
 // duration.
 type Stats struct {
-	MinutesPlayed          int
+	MinutesPlayed          string
 	FieldGoalsMade         int
 	FieldGoalsAttempted    int
 	FieldGoalPercentage    float64
