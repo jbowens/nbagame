@@ -6,6 +6,15 @@ import (
 	"github.com/jbowens/nbagame"
 )
 
+func printGameDetails(gameID string) {
+	details, err := nbagame.API.Games.Details(gameID)
+	if err != nil {
+		panic("Game details error: " + err.Error())
+	}
+
+	fmt.Printf("%+v\n", details)
+}
+
 func printBoxScore(gameID string) {
 	teamStats, _, err := nbagame.API.Games.BoxScore(gameID)
 	if err != nil {
@@ -50,5 +59,6 @@ func printPlayerDetails(playerID int) {
 
 func main() {
 	// printPlayerDetails(202322)
-	printBoxScore("0021401147")
+	// printBoxScore("0021401147")
+	printGameDetails("0021401147")
 }

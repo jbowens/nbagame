@@ -10,6 +10,13 @@ const (
 	tagKey = "nbagame"
 )
 
+// ErrBadResponse is returned when a response is not formatted as expected.
+type ErrBadResponse string
+
+func (err ErrBadResponse) Error() string {
+	return fmt.Sprintf("Bad stats.nba.com response: %s", string(err))
+}
+
 // Response represents a results from the stats.nba.com API.
 type Response struct {
 	Resource   string       `json:"resource"`

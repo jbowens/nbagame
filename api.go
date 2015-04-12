@@ -93,6 +93,18 @@ type Games struct {
 	client *APIClient
 }
 
+// Details returns detailed information about the given game.
+func (c *Games) Details(gameID string) (*data.GameDetails, error) {
+	var resp endpoints.BoxScoreSummaryResponse
+	if err := c.client.Requester.Request("boxscoresummaryv2", &endpoints.BoxScoreSummaryParams{
+		GameID: gameID,
+	}, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp.ToData()
+}
+
 // BoxScore returns the box score for the given game.
 func (c *Games) BoxScore(gameID string) ([]*data.TeamStats, []*data.PlayerStats, error) {
 	var resp endpoints.BoxScoreTraditionalResponse
