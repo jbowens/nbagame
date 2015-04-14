@@ -42,5 +42,5 @@ type Stats struct {
 	Turnovers              int
 	PersonalFouls          int
 	Points                 int
-	PlusMinus              float64
+	PlusMinus              int
 }
