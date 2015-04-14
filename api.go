@@ -13,6 +13,7 @@ var (
 func init() {
 	API = APIClient{
 		Requester: &endpoints.DefaultRequester,
+		season:    data.CurrentSeason,
 	}
 	API.Teams = &Teams{client: &API}
 	API.Players = &Players{client: &API}
@@ -25,6 +26,18 @@ type APIClient struct {
 	Teams     *Teams
 	Players   *Players
 	Games     *Games
+
+	season data.Season
+}
+
+// Season creates an API client for the given season.
+func Season(season data.Season) *APIClient {
+	api := &APIClient{
+		Requester: &endpoints.DefaultRequester,
+		season:    season,
+	}
+	api.Teams, api.Players, api.Games = &Teams{api}, &Players{api}, &Games{api}
+	return api
 }
 
 type Teams struct {
@@ -127,4 +140,24 @@ func (c *Games) BoxScore(gameID string) ([]*data.TeamStats, []*data.PlayerStats,
 
 	teamStats, playerStats := resp.ToData()
 	return teamStats, playerStats, nil
+}
+
+// PlayedBy returns the IDs of all games played by the given team so far this
+// year. Unfortunately, the stats.nba.com API does not provide upcoming games.
+func (c *Games) PlayedBy(teamID int) ([]data.GameID, error) {
+	var resp endpoints.TeamGameLogResponse
+	if err := c.client.Requester.Request("teamgamelog", &endpoints.TeamGameLogParams{
+		LeagueID:   "00",
+		TeamID:     teamID,
+		Season:     c.client.season.String(),
+		SeasonType: "Regular Season",
+	}, &resp); err != nil {
+		return nil, err
+	}
+
+	gameIDs := []data.GameID{}
+	for _, game := range resp.TeamGameLog {
+		gameIDs = append(gameIDs, data.GameID(game.GameID))
+	}
+	return gameIDs, nil
 }
