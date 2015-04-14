@@ -119,7 +119,7 @@ func (c *Games) Details(gameID string) (*data.GameDetails, error) {
 }
 
 // BoxScore returns the box score for the given game.
-func (c *Games) BoxScore(gameID string) ([]*data.TeamStats, []*data.PlayerStats, error) {
+func (c *Games) BoxScore(gameID string) (*data.BoxScore, error) {
 	var resp endpoints.BoxScoreTraditionalResponse
 	if err := c.client.Requester.Request("boxscoretraditionalv2", &endpoints.BoxScoreTraditionalParams{
 		GameID:      gameID,
@@ -131,15 +131,15 @@ func (c *Games) BoxScore(gameID string) ([]*data.TeamStats, []*data.PlayerStats,
 		EndRange:    28800,
 		RangeType:   2,
 	}, &resp); err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	if len(resp.TeamStats) == 0 {
-		return nil, nil, nil
+		return nil, nil
 	}
 
 	teamStats, playerStats := resp.ToData()
-	return teamStats, playerStats, nil
+	return &data.BoxScore{teamStats, playerStats}, nil
 }
 
 // PlayedBy returns the IDs of all games played by the given team so far this

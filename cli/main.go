@@ -16,12 +16,12 @@ func printGameDetails(gameID string) {
 }
 
 func printBoxScore(gameID string) {
-	teamStats, _, err := nbagame.API.Games.BoxScore(gameID)
+	boxScore, err := nbagame.API.Games.BoxScore(gameID)
 	if err != nil {
 		panic("Box Score error: " + err.Error())
 	}
 
-	for _, teamStats := range teamStats {
+	for _, teamStats := range boxScore.TeamStats {
 		fmt.Printf("%s %s - %v\n", teamStats.TeamCity, teamStats.TeamName, teamStats.Points)
 	}
 }
