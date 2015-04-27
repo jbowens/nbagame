@@ -59,15 +59,14 @@ func (r *BoxScoreSummaryResponse) ToData() (*data.GameDetails, error) {
 	}
 	summary := r.GameSummary[0]
 
-	seasonYear, err := strconv.Atoi(summary.Season)
+	season, err := summary.ParseSeason()
 	if err != nil {
-		return nil, ErrBadResponse(err.Error())
+		return nil, err
 	}
-	season := fmt.Sprintf("%s-%s", strconv.Itoa(seasonYear), strconv.Itoa(seasonYear + 1)[2:])
 
-	gameDate, err := time.ParseInLocation("2006-01-02T15:04:05", summary.GameDateEST, EastCoast)
+	gameDate, err := summary.ParseDate()
 	if err != nil {
-		return nil, ErrBadResponse(fmt.Sprintf("unable to parse state time: %s", err.Error()))
+		return nil, err
 	}
 
 	var homeLineScore, visitorLineScore *LineScoreRow
@@ -85,11 +84,11 @@ func (r *BoxScoreSummaryResponse) ToData() (*data.GameDetails, error) {
 
 	details := &data.GameDetails{
 		Game: data.Game{
-			ID:                data.GameID(summary.GameID),
+			ID:                summary.ParseGameID(),
 			HomeTeamID:        summary.HomeTeamID,
 			VisitorTeamID:     summary.VisitorTeamID,
-			Season:            data.Season(season),
-			Status:            ConvertGameStatus(summary.GameStatusID),
+			Season:            season,
+			Status:            summary.ParseStatus(),
 			LastMeetingGameID: data.GameID(r.LastMeeting[0].LastGameID),
 		},
 		Date:          gameDate,
@@ -146,6 +145,35 @@ type GameSummaryRow struct {
 	LivePeriodTimeBroadcast string `nbagame:"LIVE_PERIOD_TIME_BCAST"`
 	WHStatus                int    `nbagame:"WH_STATUS"`
 	// NationalTVBroadcaster   *string `nbagame:"NATL_TV_BROADCASTER_ABBREVIATION"`
+}
+
+// ParseGameID returns a data.GameID for the game.
+func (row *GameSummaryRow) ParseGameID() data.GameID {
+	return data.GameID(row.GameID)
+}
+
+// ParseSeason returns a data.Season representing the season in this row.
+func (row *GameSummaryRow) ParseSeason() (data.Season, error) {
+	seasonYear, err := strconv.Atoi(row.Season)
+	if err != nil {
+		return "", ErrBadResponse(err.Error())
+	}
+	season := fmt.Sprintf("%s-%s", strconv.Itoa(seasonYear), strconv.Itoa(seasonYear + 1)[2:])
+	return data.Season(season), nil
+}
+
+// ParseDate returns the date when the game occurred.
+func (row *GameSummaryRow) ParseDate() (t time.Time, err error) {
+	t, err = time.ParseInLocation("2006-01-02T15:04:05", row.GameDateEST, EastCoast)
+	if err != nil {
+		return t, ErrBadResponse(fmt.Sprintf("unable to parse state time: %s", err.Error()))
+	}
+	return t, nil
+}
+
+// ParseStatus returns the status of the game.
+func (row *GameSummaryRow) ParseStatus() data.GameStatus {
+	return ConvertGameStatus(row.GameStatusID)
 }
 
 // OtherStatsRow represents the schema returned for 'OtherStats' result

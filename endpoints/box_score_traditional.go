@@ -105,7 +105,7 @@ type StatLine struct {
 	Turnovers              int     `nbagame:"TO"`
 	PersonalFouls          int     `nbagame:"PF"`
 	Points                 int     `nbagame:"PTS"`
-	PlusMinus              float64 `nbagame:"PLUS_MINUS"`
+	PlusMinus              int     `nbagame:"PLUS_MINUS"`
 }
 
 // ToStats converts a StatLine into a data Stats struct.
