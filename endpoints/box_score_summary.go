@@ -128,7 +128,7 @@ func (r *BoxScoreSummaryResponse) ToData() (*data.GameDetails, error) {
 	return details, nil
 }
 
-// TeamStatsRow represents the schema returned for 'GameSummary' result
+// GameSummaryRow represents the schema returned for 'GameSummary' result
 // sets, returned from the 'boxscoresummary' resource.
 type GameSummaryRow struct {
 	GameDateEST             string `nbagame:"GAME_DATE_EST"`

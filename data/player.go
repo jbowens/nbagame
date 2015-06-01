@@ -23,6 +23,13 @@ type Player struct {
 	PlayerCode      string
 }
 
+// PlayerDescription summarizes a player.
+type PlayerDescription struct {
+	ID     int
+	Name   string
+	TeamID int
+}
+
 // PlayerDetails contains detailed information about an NBA player.
 type PlayerDetails struct {
 	PlayerID         int
