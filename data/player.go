@@ -14,41 +14,41 @@ const (
 
 // Player holds basic, identifying information about an NBA player.
 type Player struct {
-	ID              int
-	FirstName       string
-	LastName        string
-	RosterStatus    RosterStatus
-	CareerStartYear string
-	CareerEndYear   string
-	PlayerCode      string
+	ID              int          `json:"id"`
+	FirstName       string       `json:"first_name"`
+	LastName        string       `json:"last_name"`
+	RosterStatus    RosterStatus `json:"roster_status"`
+	CareerStartYear string       `json:"career_start_year"`
+	CareerEndYear   string       `json:"career_end_year"`
+	PlayerCode      string       `json:"player_code"`
 }
 
 // PlayerDescription summarizes a player.
 type PlayerDescription struct {
-	ID     int
-	Name   string
-	TeamID int
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	TeamID int    `json:"team_id"`
 }
 
 // PlayerDetails contains detailed information about an NBA player.
 type PlayerDetails struct {
-	PlayerID         int
-	FirstName        string
-	LastName         string
-	Birthdate        *time.Time
-	School           string
-	Country          string
-	Height           int
-	Weight           int
-	SeasonExperience int
-	Jersey           string
-	Position         string
-	RosterStatus     RosterStatus
-	TeamID           int
-	TeamName         string
-	TeamAbbreviation string
-	TeamCity         string
-	CareerStartYear  string
-	CareerEndYear    string
-	DLeague          bool
+	PlayerID         int          `json:"id"`
+	FirstName        string       `json:"first_name"`
+	LastName         string       `json:"last_name"`
+	Birthdate        *time.Time   `json:"birth_date"`
+	School           string       `json:"school"`
+	Country          string       `json:"country"`
+	Height           int          `json:"height"`
+	Weight           int          `json:"weight"`
+	SeasonExperience int          `json:"season_experience"`
+	Jersey           string       `json:"jersey"`
+	Position         string       `json:"position"`
+	RosterStatus     RosterStatus `json:"roster_status"`
+	TeamID           int          `json:"team_id"`
+	TeamName         string       `json:"team_name"`
+	TeamAbbreviation string       `json:"team_abbreviation"`
+	TeamCity         string       `json:"team_city"`
+	CareerStartYear  string       `json:"career_start_year"`
+	CareerEndYear    string       `json:"career_end_year"`
+	DLeague          bool         `json:"dleague"`
 }

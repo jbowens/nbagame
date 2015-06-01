@@ -4,16 +4,16 @@ package data
 type EventType int
 
 const (
-	Other        EventType = 0
-	Foul         EventType = 1
-	FreeThrow    EventType = 2
-	Rebound      EventType = 3
-	ShotAttempt  EventType = 4
-	Steal        EventType = 5
-	Substitution EventType = 6
-	Timeout      EventType = 7
-	Turnover     EventType = 8
-	Violation    EventType = 9
+	Other EventType = iota
+	Foul
+	FreeThrow
+	Rebound
+	ShotAttempt
+	Steal
+	Substitution
+	Timeout
+	Turnover
+	Violation
 )
 
 // ShotAttemptAttribute is an enum for attributes providing more details about a shot
@@ -21,38 +21,38 @@ const (
 type ShotAttemptAttribute int
 
 const (
-	AlleyOop     ShotAttemptAttribute = 1
-	Blocked      ShotAttemptAttribute = 2
-	Dunk         ShotAttemptAttribute = 3
-	Fadeaway     ShotAttemptAttribute = 4
-	FingerRoll   ShotAttemptAttribute = 5
-	Floater      ShotAttemptAttribute = 6
-	Hook         ShotAttemptAttribute = 7
-	JumpShot     ShotAttemptAttribute = 8
-	Layup        ShotAttemptAttribute = 9
-	Missed       ShotAttemptAttribute = 10
-	PutBack      ShotAttemptAttribute = 11
-	PullUp       ShotAttemptAttribute = 12
-	Reverse      ShotAttemptAttribute = 13
-	StepBack     ShotAttemptAttribute = 14
-	ThreePointer ShotAttemptAttribute = 15
-	TipIn        ShotAttemptAttribute = 16
-	Turnaround   ShotAttemptAttribute = 17
-	WhileDriving ShotAttemptAttribute = 18
-	WhileRunning ShotAttemptAttribute = 19
+	AlleyOop ShotAttemptAttribute = iota
+	Blocked
+	Dunk
+	Fadeaway
+	FingerRoll
+	Floater
+	Hook
+	JumpShot
+	Layup
+	Missed
+	PutBack
+	PullUp
+	Reverse
+	StepBack
+	ThreePointer
+	TipIn
+	Turnaround
+	WhileDriving
+	WhileRunning
 )
 
 // Event describes an event that occurs within a game.
 type Event struct {
-	GameID          GameID
-	Types           []EventType
-	Period          int
-	Score           *Score
-	WallClock       string
-	PeriodTime      string
-	Descriptions    []string
-	InvolvedPlayers []*PlayerDescription
-	ShotAttributes  []ShotAttemptAttribute
+	GameID          GameID                 `json:"game_id"`
+	Types           []EventType            `json:"types"`
+	Period          int                    `json:"period"`
+	Score           *Score                 `json:"score,omitempty"`
+	WallClock       string                 `json:"wall_clock"`
+	PeriodTime      string                 `json:"period_time"`
+	Descriptions    []string               `json:"descriptions"`
+	InvolvedPlayers []*PlayerDescription   `json:"involved_players,omitempty"`
+	ShotAttributes  []ShotAttemptAttribute `json:"shot_attributes,omitempty"`
 }
 
 func (e *Event) Is(typ EventType) bool {
@@ -65,6 +65,6 @@ func (e *Event) Is(typ EventType) bool {
 }
 
 type Score struct {
-	Home    int
-	Visitor int
+	Home    int `json:"home"`
+	Visitor int `json:"visitor"`
 }

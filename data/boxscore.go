@@ -2,8 +2,8 @@ package data
 
 // BoxScore holds an individual game's box score.
 type BoxScore struct {
-	TeamStats   []*TeamStats
-	PlayerStats []*PlayerStats
+	TeamStats   []*TeamStats   `json:"team"`
+	PlayerStats []*PlayerStats `json:"player"`
 }
 
 // Team returns the stats for the team with the given ID. If no team
