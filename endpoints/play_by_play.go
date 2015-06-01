@@ -17,16 +17,20 @@ const (
 var (
 	eventTypeMapping = map[string]data.EventType{
 		"REBOUND":    data.Rebound,
+		"Rebound":    data.Rebound,
 		"SUB:":       data.Substitution,
 		"STEAL":      data.Steal,
 		"Turnover":   data.Turnover,
 		"Shot":       data.ShotAttempt,
 		"Layup":      data.ShotAttempt,
 		"Dunk":       data.ShotAttempt,
+		"Jumper":     data.ShotAttempt,
 		"Timeout":    data.Timeout,
 		"FOUL":       data.Foul,
+		"Foul":       data.Foul,
 		"Free Throw": data.FreeThrow,
 		"Violation":  data.Violation,
+		"Jump Ball":  data.JumpBall,
 	}
 
 	shotAttributeMapping = map[string]data.ShotAttemptAttribute{

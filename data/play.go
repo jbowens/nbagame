@@ -7,13 +7,14 @@ const (
 	Other        EventType = 0
 	Foul         EventType = 1
 	FreeThrow    EventType = 2
-	Rebound      EventType = 3
-	ShotAttempt  EventType = 4
-	Steal        EventType = 5
-	Substitution EventType = 6
-	Timeout      EventType = 7
-	Turnover     EventType = 8
-	Violation    EventType = 9
+	JumpBall     EventType = 3
+	Rebound      EventType = 4
+	ShotAttempt  EventType = 5
+	Steal        EventType = 6
+	Substitution EventType = 7
+	Timeout      EventType = 8
+	Turnover     EventType = 9
+	Violation    EventType = 10
 )
 
 // ShotAttemptAttribute is an enum for attributes providing more details about a shot
