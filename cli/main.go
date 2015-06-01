@@ -26,6 +26,17 @@ func printBoxScore(gameID string) {
 	}
 }
 
+func printPlayByPlay(gameID string) {
+	events, err := nbagame.API.Games.PlayByPlay(gameID)
+	if err != nil {
+		panic("Play by play error: " + err.Error())
+	}
+
+	for _, event := range events {
+		fmt.Printf("%+v\n", event)
+	}
+}
+
 func printAllPlayers() {
 	allPlayers, err := nbagame.API.Players.All()
 	if err != nil {
@@ -60,5 +71,6 @@ func printPlayerDetails(playerID int) {
 func main() {
 	// printPlayerDetails(202322)
 	// printBoxScore("0021401147")
-	printGameDetails("0021401147")
+	// printGameDetails("0021401147")
+	printPlayByPlay("0021401147")
 }

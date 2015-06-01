@@ -71,6 +71,16 @@ type PlayByPlayResponse struct {
 	PlayByPlay []*PlayByPlayRow `nbagame:"PlayByPlay"`
 }
 
+func (resp *PlayByPlayResponse) ToData() []*data.Event {
+	var events []*data.Event
+
+	for _, row := range resp.PlayByPlay {
+		events = append(events, row.ToData())
+	}
+
+	return events
+}
+
 // PlayByPlayRow represents the schema returned for 'PlayByPlay' result
 // sets, returned from the 'playbyplay' resource.
 type PlayByPlayRow struct {
@@ -87,29 +97,29 @@ type PlayByPlayRow struct {
 	ScoreString            *string `nbagame:"SCORE"`       // ex. "94 - 97"
 	ScoreMargin            *string `nbagame:"SCOREMARGIN"` // ex. 5, -3, or "TIE" o_O
 	// First person involved in play
-	Person1Type             *int    `nbagame:"PERSON1TYPE"`
-	Player1ID               *int    `nbagame:"PLAYER1_ID"`
-	Player1Name             *string `nbagame:"PLAYER1_NAME"`
-	Player1TeamID           *int    `nbagame:"PLAYER1_TEAM_ID"`
-	Player1TeamCity         *string `nbagame:"PLAYER1_TEAM_CITY"`
-	Player1TeamNickname     *string `nbagame:"PLAYER1_TEAM_NICKNAME"`
-	Player1TeamAbbreviation *string `nbagame:"PLAYER1_TEAM_ABBREVIATION"`
+	Person1Type             int    `nbagame:"PERSON1TYPE"`
+	Player1ID               int    `nbagame:"PLAYER1_ID"`
+	Player1Name             string `nbagame:"PLAYER1_NAME"`
+	Player1TeamID           int    `nbagame:"PLAYER1_TEAM_ID"`
+	Player1TeamCity         string `nbagame:"PLAYER1_TEAM_CITY"`
+	Player1TeamNickname     string `nbagame:"PLAYER1_TEAM_NICKNAME"`
+	Player1TeamAbbreviation string `nbagame:"PLAYER1_TEAM_ABBREVIATION"`
 	// Second person involved in play
-	Person2Type             *int    `nbagame:"PERSON2TYPE"`
-	Player2ID               *int    `nbagame:"PLAYER2_ID"`
-	Player2Name             *string `nbagame:"PLAYER2_NAME"`
-	Player2TeamID           *int    `nbagame:"PLAYER2_TEAM_ID"`
-	Player2TeamCity         *string `nbagame:"PLAYER2_TEAM_CITY"`
-	Player2TeamNickname     *string `nbagame:"PLAYER2_TEAM_NICKNAME"`
-	Player2TeamAbbreviation *string `nbagame:"PLAYER2_TEAM_ABBREVIATION"`
+	Person2Type             int    `nbagame:"PERSON2TYPE"`
+	Player2ID               int    `nbagame:"PLAYER2_ID"`
+	Player2Name             string `nbagame:"PLAYER2_NAME"`
+	Player2TeamID           int    `nbagame:"PLAYER2_TEAM_ID"`
+	Player2TeamCity         string `nbagame:"PLAYER2_TEAM_CITY"`
+	Player2TeamNickname     string `nbagame:"PLAYER2_TEAM_NICKNAME"`
+	Player2TeamAbbreviation string `nbagame:"PLAYER2_TEAM_ABBREVIATION"`
 	// Third person involved in play
-	Person3Type             *int    `nbagame:"PERSON3TYPE"`
-	Player3ID               *int    `nbagame:"PLAYER3_ID"`
-	Player3Name             *string `nbagame:"PLAYER3_NAME"`
-	Player3TeamID           *int    `nbagame:"PLAYER3_TEAM_ID"`
-	Player3TeamCity         *string `nbagame:"PLAYER3_TEAM_CITY"`
-	Player3TeamNickname     *string `nbagame:"PLAYER3_TEAM_NICKNAME"`
-	Player3TeamAbbreviation *string `nbagame:"PLAYER3_TEAM_ABBREVIATION"`
+	Person3Type             int    `nbagame:"PERSON3TYPE"`
+	Player3ID               int    `nbagame:"PLAYER3_ID"`
+	Player3Name             string `nbagame:"PLAYER3_NAME"`
+	Player3TeamID           int    `nbagame:"PLAYER3_TEAM_ID"`
+	Player3TeamCity         string `nbagame:"PLAYER3_TEAM_CITY"`
+	Player3TeamNickname     string `nbagame:"PLAYER3_TEAM_NICKNAME"`
+	Player3TeamAbbreviation string `nbagame:"PLAYER3_TEAM_ABBREVIATION"`
 }
 
 func (r *PlayByPlayRow) ToData() *data.Event {
@@ -124,27 +134,27 @@ func (r *PlayByPlayRow) ToData() *data.Event {
 		InvolvedPlayers: []*data.PlayerDescription{},
 	}
 
-	if r.Player1ID != nil && r.Player1Name != nil && r.Player1TeamID != nil {
+	if r.Player1ID != 0 && r.Player1Name != "" && r.Player1TeamID != 0 {
 		event.InvolvedPlayers = append(event.InvolvedPlayers, &data.PlayerDescription{
-			ID:     *r.Player1ID,
-			Name:   *r.Player1Name,
-			TeamID: *r.Player1TeamID,
+			ID:     r.Player1ID,
+			Name:   r.Player1Name,
+			TeamID: r.Player1TeamID,
 		})
 	}
 
-	if r.Player2ID != nil && r.Player2Name != nil && r.Player2TeamID != nil {
+	if r.Player2ID != 0 && r.Player2Name != "" && r.Player2TeamID != 0 {
 		event.InvolvedPlayers = append(event.InvolvedPlayers, &data.PlayerDescription{
-			ID:     *r.Player2ID,
-			Name:   *r.Player2Name,
-			TeamID: *r.Player2TeamID,
+			ID:     r.Player2ID,
+			Name:   r.Player2Name,
+			TeamID: r.Player2TeamID,
 		})
 	}
 
-	if r.Player3ID != nil && r.Player3Name != nil && r.Player3TeamID != nil {
+	if r.Player3ID != 0 && r.Player3Name != "" && r.Player3TeamID != 0 {
 		event.InvolvedPlayers = append(event.InvolvedPlayers, &data.PlayerDescription{
-			ID:     *r.Player3ID,
-			Name:   *r.Player3Name,
-			TeamID: *r.Player3TeamID,
+			ID:     r.Player3ID,
+			Name:   r.Player3Name,
+			TeamID: r.Player3TeamID,
 		})
 	}
 
@@ -182,10 +192,10 @@ func (r *PlayByPlayRow) DescriptionContains(substr string) bool {
 	if r.HomeDescription != nil && strings.Contains(*r.HomeDescription, substr) {
 		return true
 	}
-	if r.NeutralDescription != nil && strings.Contains(*r.VisitorDescription, substr) {
+	if r.NeutralDescription != nil && strings.Contains(*r.NeutralDescription, substr) {
 		return true
 	}
-	if r.VisitorDescription != nil && strings.Contains(*r.NeutralDescription, substr) {
+	if r.VisitorDescription != nil && strings.Contains(*r.VisitorDescription, substr) {
 		return true
 	}
 	return false

@@ -142,6 +142,25 @@ func (c *Games) BoxScore(gameID string) (*data.BoxScore, error) {
 	return &data.BoxScore{teamStats, playerStats}, nil
 }
 
+// PlayByPlay returns a play-by-play list of events for a game.
+func (c *Games) PlayByPlay(gameID string) ([]*data.Event, error) {
+	var resp endpoints.PlayByPlayResponse
+	if err := c.client.Requester.Request("playbyplayv2", &endpoints.PlayByPlayParams{
+		GameID:      gameID,
+		Season:      data.CurrentSeason.String(),
+		SeasonType:  "RegularSeason",
+		StartPeriod: 1,
+		EndPeriod:   10,
+		StartRange:  0,
+		EndRange:    55800,
+		RangeType:   2,
+	}, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp.ToData(), nil
+}
+
 // PlayedBy returns the IDs of all games played by the given team so far this
 // year. Unfortunately, the stats.nba.com API does not provide upcoming games.
 func (c *Games) PlayedBy(teamID int) ([]data.GameID, error) {

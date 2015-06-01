@@ -152,10 +152,22 @@ func populateValue(v reflect.Value, row []interface{}, headers map[string]int) e
 		}
 		rowValueType := rowValue.Type()
 		fieldValueType := fieldValue.Type()
-		if !rowValueType.ConvertibleTo(fieldValueType) {
-			return fmt.Errorf("cannot convert `%v` to `%v` for %s", rowValue.Type(), fieldValue.Type(), fieldHeader)
+
+		if rowValueType.ConvertibleTo(fieldValueType) {
+			fieldValue.Set(rowValue.Convert(fieldValue.Type()))
+			continue
 		}
-		fieldValue.Set(rowValue.Convert(fieldValue.Type()))
+
+		if fieldValueType.Kind() == reflect.Ptr && rowValueType.ConvertibleTo(fieldValueType.Elem()) {
+			// The field is a pointer to the right type.
+			elemValue := reflect.New(fieldValue.Type().Elem())
+			reflect.Indirect(elemValue).Set(rowValue.Convert(fieldValue.Type().Elem()))
+			fieldValue.Set(elemValue)
+			continue
+		}
+
+		return fmt.Errorf("cannot convert `%v` to `%v` for %s", rowValue.Type(), fieldValue.Type(), fieldHeader)
+
 	}
 	return nil
 }
