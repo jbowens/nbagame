@@ -2,6 +2,13 @@ package data
 
 import "time"
 
+var gameStatusStrings = map[GameStatus]string{
+	Unknown:   "UNKNOWN",
+	Scheduled: "SCHEDULED",
+	Live:      "LIVE",
+	Final:     "FINAL",
+}
+
 // GameID holds a unique identifier for an NBA game. The identifier is unique
 // across all seasons and teams.
 type GameID string
@@ -13,15 +20,20 @@ func (id GameID) String() string {
 // GameStatus indicates the status of a game.
 type GameStatus int
 
-// TODO: Identify and populate the rest of the GameStatus values.
 const (
 	// Unknown is used for unrecognized game status IDs.
 	Unknown GameStatus = 0
+	// Scheduled indicates that a game is scheduled but has not yet begun.
+	Scheduled GameStatus = 1
 	// Live indicates that a game is in progress.
 	Live GameStatus = 2
 	// Final indicates a Game's score is Final and the game has finished.
 	Final GameStatus = 3
 )
+
+func (s GameStatus) String() string {
+	return gameStatusStrings[s]
+}
 
 // Game holds basic information about a NBA game.
 type Game struct {

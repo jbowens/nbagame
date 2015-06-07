@@ -2,9 +2,21 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/jbowens/nbagame"
 )
+
+func printTodaysGames() {
+	games, err := nbagame.API.Games.ByDate(time.Now())
+	if err != nil {
+		panic("Retrieving games error: " + err.Error())
+	}
+
+	for _, game := range games {
+		fmt.Printf("Game %v between %v and %v, %v\n", game.ID, game.HomeTeamID, game.VisitorTeamID, game.Status)
+	}
+}
 
 func printGameDetails(gameID string) {
 	details, err := nbagame.API.Games.Details(gameID)
@@ -72,5 +84,6 @@ func main() {
 	// printPlayerDetails(202322)
 	// printBoxScore("0021401147")
 	// printGameDetails("0021401147")
-	printPlayByPlay("0021401147")
+	// printPlayByPlay("0021401147")
+	printTodaysGames()
 }

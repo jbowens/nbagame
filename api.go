@@ -1,6 +1,8 @@
 package nbagame
 
 import (
+	"time"
+
 	"github.com/jbowens/nbagame/data"
 	"github.com/jbowens/nbagame/endpoints"
 )
@@ -159,6 +161,20 @@ func (c *Games) PlayByPlay(gameID string) ([]*data.Event, error) {
 	}
 
 	return resp.ToData(), nil
+}
+
+// ByDate retrieves all the NBA games happening on the given date.
+func (c *Games) ByDate(date time.Time) ([]*data.Game, error) {
+	var resp endpoints.ScoreboardResponse
+	if err := c.client.Requester.Request("scoreboardV2", &endpoints.ScoreboardParams{
+		LeagueID:  "00",
+		DayOffset: 0,
+		GameDate:  date.Format("01/02/2006"),
+	}, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp.ToData()
 }
 
 // PlayedBy returns the IDs of all games played by the given team so far this

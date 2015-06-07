@@ -14,6 +14,7 @@ var (
 )
 
 var knownGameStatus = []data.GameStatus{
+	data.Scheduled,
 	data.Live,
 	data.Final,
 }
@@ -240,7 +241,6 @@ type LineScoreRow struct {
 	TeamID           int    `nbagame:"TEAM_ID"`
 	TeamAbbreviation string `nbagame:"TEAM_ABBREVIATION"`
 	TeamCityName     string `nbagame:"TEAM_CITY_NAME"`
-	TeamNickname     string `nbagame:"TEAM_NICKNAME"`
 	TeamWinsLosses   string `nbagame:"TEAM_WINS_LOSSES"`
 	Q1               int    `nbagame:"PTS_QTR1"`
 	Q2               int    `nbagame:"PTS_QTR2"`
