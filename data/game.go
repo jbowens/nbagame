@@ -25,36 +25,36 @@ const (
 
 // Game holds basic information about a NBA game.
 type Game struct {
-	ID                GameID
-	HomeTeamID        int
-	VisitorTeamID     int
-	Season            Season
-	Status            GameStatus
-	LastMeetingGameID GameID
+	ID                GameID     `json:"id"`
+	HomeTeamID        int        `json:"home_team_id"`
+	VisitorTeamID     int        `json:"visitor_team_id"`
+	Season            Season     `json:"season"`
+	Status            GameStatus `json:"status"`
+	LastMeetingGameID GameID     `json:"last_meeting_game_id"`
 }
 
 // GameDetails provides detailed information and summary of an NBA game.
 type GameDetails struct {
 	Game
-	Date          time.Time
-	LengthMinutes int
-	Attendance    int
-	Officials     []*Official
-	HomePoints    *PointSummary
-	VisitorPoints *PointSummary
-	LeadChanges   int
-	TimesTied     int
+	Date          time.Time     `json:"date"`
+	LengthMinutes int           `json:"length_minutes"`
+	Attendance    int           `json:"attendance"`
+	Officials     []*Official   `json:"officials"`
+	HomePoints    *PointSummary `json:"home_points"`
+	VisitorPoints *PointSummary `json:"visitor_points"`
+	LeadChanges   int           `json:"lead_changes"`
+	TimesTied     int           `json:"times_tied"`
 }
 
 // PointSummary provides aggregate team point statistics.
 type PointSummary struct {
-	InPaint       int
-	SecondChance  int
-	FromBench     int
-	FirstQuarter  int
-	SecondQuarter int
-	ThirdQuarter  int
-	FourthQuarter int
-	Overtime      []int
-	Total         int
+	InPaint       int   `json:"in_paint"`
+	SecondChance  int   `json:"second_chance"`
+	FromBench     int   `json:"from_bench"`
+	FirstQuarter  int   `json:"first_quarter"`
+	SecondQuarter int   `json:"second_quarter"`
+	ThirdQuarter  int   `json:"third_quarter"`
+	FourthQuarter int   `json:"fourth_quarter"`
+	Overtime      []int `json:"overtime"`
+	Total         int   `json:"total"`
 }
