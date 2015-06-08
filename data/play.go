@@ -44,6 +44,7 @@ const (
 )
 
 // Event describes an event that occurs within a game.
+// TODO(jackson): Figure out how to map to the database model.
 type Event struct {
 	GameID          GameID                 `json:"game_id"`
 	Types           []EventType            `json:"types"`
