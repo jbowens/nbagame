@@ -50,6 +50,7 @@ CREATE TABLE `players` (
     weight            INT NULL,
     season_experience INT NOT NULL,
     jersey            VARCHAR(255) NULL,
+    position          VARCHAR(255) NULL,
     dleague           TINYINT(1) NOT NULL DEFAULT 0,
     INDEX(team_id),
     INDEX(team_abbreviation),
