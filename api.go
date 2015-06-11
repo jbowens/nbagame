@@ -101,7 +101,7 @@ func (c *Players) Details(playerID int) (*data.PlayerDetails, error) {
 	if len(resp.CommonPlayerInfo) == 0 {
 		return nil, nil
 	}
-	return resp.CommonPlayerInfo[0].ToPlayerDetails(), nil
+	return resp.CommonPlayerInfo[0].ToPlayerDetails()
 }
 
 type Games struct {

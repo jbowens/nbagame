@@ -53,7 +53,7 @@ type CommonPlayerInfoRow struct {
 }
 
 // ToPlayerDetails converts a row to a PlayerDetails struct.
-func (r *CommonPlayerInfoRow) ToPlayerDetails() *data.PlayerDetails {
+func (r *CommonPlayerInfoRow) ToPlayerDetails() (*data.PlayerDetails, error) {
 	playerDetails := &data.PlayerDetails{
 		PlayerID:         r.PlayerID,
 		FirstName:        r.FirstName,
@@ -73,9 +73,10 @@ func (r *CommonPlayerInfoRow) ToPlayerDetails() *data.PlayerDetails {
 
 	// Convert birthdate string into a time.Time
 	bday, err := time.Parse(dateFormat, r.Birthdate)
-	if err == nil {
-		playerDetails.Birthdate = &bday
+	if err != nil {
+		return nil, err
 	}
+	playerDetails.Birthdate = &bday
 
 	// Convert height from string into inches integer.
 	heightParts := strings.Split(r.Height, "-")
@@ -98,5 +99,5 @@ func (r *CommonPlayerInfoRow) ToPlayerDetails() *data.PlayerDetails {
 		playerDetails.DLeague = true
 	}
 
-	return playerDetails
+	return playerDetails, nil
 }
