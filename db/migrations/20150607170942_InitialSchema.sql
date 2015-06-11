@@ -3,7 +3,7 @@
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE `teams` (
     id                  INT NOT NULL PRIMARY KEY,
-    abbreviation        VARCHAR(5) NOT NULL,
+    abbreviation        VARCHAR(5) NULL,
     city                VARCHAR(255) NOT NULL,
     name                VARCHAR(255) NOT NULL,
     start_year          YEAR(4) NOT NULL,
@@ -14,8 +14,7 @@ CREATE TABLE `teams` (
     playoff_appearances INT NOT NULL,
     division_titles     INT NOT NULL,
     conference_titles   INT NOT NULL,
-    league_titles       INT NOT NULL,
-    UNIQUE(abbreviation)
+    league_titles       INT NOT NULL
 );
 
 CREATE TABLE `games` (

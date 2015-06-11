@@ -1,6 +1,9 @@
 package data
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // RosterStatus indicates whether a player is active on a roster.
 type RosterStatus int
@@ -21,6 +24,10 @@ type Player struct {
 	CareerStartYear string       `json:"career_start_year" db:"career_start"`
 	CareerEndYear   string       `json:"career_end_year" db:"career_end"`
 	PlayerCode      string       `json:"player_code" db:"-"`
+}
+
+func (p *Player) String() string {
+	return fmt.Sprintf("%v - %s, %s", p.ID, p.LastName, p.FirstName)
 }
 
 // PlayerDescription summarizes a player.

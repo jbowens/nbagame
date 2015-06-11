@@ -2,88 +2,74 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"log"
+	"os"
 
-	"github.com/jbowens/nbagame"
+	"github.com/codegangsta/cli"
+	"github.com/jbowens/nbagame/db/sync"
 )
 
-func printTodaysGames() {
-	games, err := nbagame.API.Games.ByDate(time.Now())
-	if err != nil {
-		panic("Retrieving games error: " + err.Error())
-	}
+const (
+	defualtDatabaseEnvironment = "development"
+)
 
-	for _, game := range games {
-		fmt.Printf("Game %v between %v and %v, %v\n", game.ID, game.HomeTeamID, game.VisitorTeamID, game.Status)
-	}
+func env(c *cli.Context) string {
+	return defualtDatabaseEnvironment
 }
 
-func printGameDetails(gameID string) {
-	details, err := nbagame.API.Games.Details(gameID)
-	if err != nil {
-		panic("Game details error: " + err.Error())
-	}
-
-	fmt.Printf("%+v\n", details)
+func newSyncer(c *cli.Context) (*sync.Syncer, error) {
+	return sync.New(env(c), "../db")
 }
 
-func printBoxScore(gameID string) {
-	boxScore, err := nbagame.API.Games.BoxScore(gameID)
-	if err != nil {
-		panic("Box Score error: " + err.Error())
-	}
+var syncer *sync.Syncer
 
-	for _, teamStats := range boxScore.TeamStats {
-		fmt.Printf("%s %s - %v\n", teamStats.TeamCity, teamStats.TeamName, teamStats.Points)
-	}
-}
-
-func printPlayByPlay(gameID string) {
-	events, err := nbagame.API.Games.PlayByPlay(gameID)
-	if err != nil {
-		panic("Play by play error: " + err.Error())
-	}
-
-	for _, event := range events {
-		fmt.Printf("%+v\n", event)
-	}
-}
-
-func printAllPlayers() {
-	allPlayers, err := nbagame.API.Players.All()
-	if err != nil {
-		panic("All players error: " + err.Error())
-	}
-
-	for _, player := range allPlayers {
-		fmt.Printf("%v %s %s\n", player.ID, player.FirstName, player.LastName)
-	}
-}
-
-func printAllTeams() {
-	allTeams, err := nbagame.API.Teams.All()
-	if err != nil {
-		panic("All teams error: " + err.Error())
-	}
-
-	for _, team := range allTeams {
-		fmt.Printf("%v, %v, %v, %v\n", team.WinPercentage, team.ID, team.Name, team.City)
-	}
-}
-
-func printPlayerDetails(playerID int) {
-	playerDetails, err := nbagame.API.Players.Details(playerID)
-	if err != nil {
-		panic("Player Details error: " + err.Error())
-	}
-
-	fmt.Printf("%+v\n", playerDetails)
+func before(c *cli.Context) (err error) {
+	syncer, err = newSyncer(c)
+	return err
 }
 
 func main() {
-	// printPlayerDetails(202322)
-	// printBoxScore("0021401147")
-	// printGameDetails("0021401147")
-	// printPlayByPlay("0021401147")
-	printTodaysGames()
+	app := cli.NewApp()
+	app.Name = "nbagame"
+	app.Usage = "NBAGame API command line interface"
+
+	app.Commands = []cli.Command{
+		{
+			Name:    "sync",
+			Aliases: []string{"s"},
+			Usage:   "sync a data type to the database",
+			Subcommands: []cli.Command{
+				{
+					Name:   "teams",
+					Usage:  "sync all nba teams to the database",
+					Before: before,
+					Action: func(c *cli.Context) {
+						count, err := syncer.SyncAllTeams()
+						if err != nil {
+							fmt.Println("error syncing teams: ", err)
+							return
+						}
+
+						fmt.Println("Synced", count, "teams to the database.")
+					},
+				},
+				{
+					Name:   "players",
+					Usage:  "sync all nba players to the database",
+					Before: before,
+					Action: func(c *cli.Context) {
+						count, err := syncer.SyncAllPlayers(log.New(os.Stdout, "[sync] ", 0))
+						if err != nil {
+							fmt.Println("error syncing players:", err)
+							return
+						}
+
+						fmt.Println("Synced", count, "players to the database.")
+					},
+				},
+			},
+		},
+	}
+
+	app.Run(os.Args)
 }
