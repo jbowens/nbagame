@@ -69,17 +69,11 @@ func (s *Syncer) SyncAllPlayers(logger *log.Logger) (int, error) {
 				return
 			}
 
-			if err := s.db.DB.Replace(playerDetails); err != nil {
-				if logger != nil {
-					logger.Printf("error processing %s: %s\n", player, err)
-				}
-				errs <- err
-				return
-			}
-
-			if logger != nil {
+			err = s.db.DB.Replace(playerDetails)
+			if logger != nil && err == nil {
 				logger.Printf("processed %s\n", player)
 			}
+			errs <- err
 		}
 	}
 	go throttle(funcs, maximumConcurrentRequests)
@@ -89,6 +83,7 @@ func (s *Syncer) SyncAllPlayers(logger *log.Logger) (int, error) {
 	var retError error
 	for i := 0; i < len(players); i++ {
 		if err := <-errs; err != nil {
+			logger.Printf("error: %s", err)
 			retError = err
 		}
 	}
