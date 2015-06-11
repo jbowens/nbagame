@@ -1,6 +1,7 @@
 package sync
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/jbowens/nbagame"
@@ -13,7 +14,8 @@ const (
 
 // Syncer handles syncing data from the NBA API to a MySQL database.
 type Syncer struct {
-	db *db.DB
+	Logger *log.Logger
+	db     *db.DB
 }
 
 // New constructs a Syncer from the goose dbconf.yml configuration file. It
@@ -41,13 +43,14 @@ func (s *Syncer) SyncAllTeams() (int, error) {
 	objs := make([]interface{}, len(teams))
 	for i := range teams {
 		objs[i] = teams[i]
+		s.log("processed %s", teams[i])
 	}
 
 	return len(teams), s.db.DB.Replace(objs...)
 }
 
 // SyncAllPlayers syncs all the players to the database. Running twice will update players.
-func (s *Syncer) SyncAllPlayers(logger *log.Logger) (int, error) {
+func (s *Syncer) SyncAllPlayers() (int, error) {
 	players, err := nbagame.API.Players.Historical()
 	if err != nil {
 		return 0, err
@@ -62,16 +65,14 @@ func (s *Syncer) SyncAllPlayers(logger *log.Logger) (int, error) {
 		funcs[i] = func() {
 			playerDetails, err := nbagame.API.Players.Details(player.ID)
 			if err != nil {
-				if logger != nil {
-					logger.Printf("error processing %s: %s\n", player, err)
-				}
+				s.logError(err)
 				errs <- err
 				return
 			}
 
 			err = s.db.DB.Replace(playerDetails)
-			if logger != nil && err == nil {
-				logger.Printf("processed %s\n", player)
+			if err == nil {
+				s.log("processed %s", player)
 			}
 			errs <- err
 		}
@@ -83,10 +84,22 @@ func (s *Syncer) SyncAllPlayers(logger *log.Logger) (int, error) {
 	var retError error
 	for i := 0; i < len(players); i++ {
 		if err := <-errs; err != nil {
-			logger.Printf("error: %s", err)
+			s.logError(err)
 			retError = err
 		}
 	}
 
 	return len(players), retError
+}
+
+func (s *Syncer) logError(err error) {
+	if err != nil {
+		s.log("error: %s", err)
+	}
+}
+
+func (s *Syncer) log(format string, args ...interface{}) {
+	if s.Logger != nil {
+		s.Logger.Printf("%s\n", fmt.Sprintf(format, args...))
+	}
 }

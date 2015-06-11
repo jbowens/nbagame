@@ -13,6 +13,10 @@ const (
 	defualtDatabaseEnvironment = "development"
 )
 
+var (
+	logger = log.New(os.Stdout, "[sync] ", 0)
+)
+
 func env(c *cli.Context) string {
 	return defualtDatabaseEnvironment
 }
@@ -25,6 +29,9 @@ var syncer *sync.Syncer
 
 func before(c *cli.Context) (err error) {
 	syncer, err = newSyncer(c)
+	if syncer != nil {
+		syncer.Logger = logger
+	}
 	return err
 }
 
@@ -58,7 +65,7 @@ func main() {
 					Usage:  "sync all nba players to the database",
 					Before: before,
 					Action: func(c *cli.Context) {
-						count, err := syncer.SyncAllPlayers(log.New(os.Stdout, "[sync] ", 0))
+						count, err := syncer.SyncAllPlayers()
 						if err != nil {
 							fmt.Println("error syncing players:", err)
 							return
