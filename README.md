@@ -3,6 +3,8 @@ An API to retrieve NBA statistics from stats.nba.com.
 
 [![GoDoc](https://godoc.org/github.com/jbowens/nbagame?status.svg)](https://godoc.org/github.com/jbowens/nbagame)
 
+![Russ](https://github.com/jbowens/nbagame/blob/master/russ.jpg)
+
 ## Overview
 
 The endpoints exposed by nba.com are not intended for public consumption, and no public documentation exists. This package attempts to wrap these endpoints in a clean, well-documented interface.
