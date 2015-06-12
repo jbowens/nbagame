@@ -42,7 +42,7 @@ type PlayerDetails struct {
 	PlayerID         int          `json:"id" db:"id"`
 	FirstName        string       `json:"first_name" db:"first_name"`
 	LastName         string       `json:"last_name" db:"last_name"`
-	Birthdate        *time.Time   `json:"birth_date" db:"birth_date"`
+	Birthdate        *time.Time   `json:"birthdate" db:"birthdate"`
 	School           string       `json:"school" db:"school"`
 	Country          string       `json:"country" db:"country"`
 	Height           int          `json:"height" db:"height"`
