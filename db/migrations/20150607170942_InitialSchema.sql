@@ -58,7 +58,7 @@ CREATE TABLE `players` (
 
 CREATE TABLE `stats` (
     id                        INT NOT NULL AUTO_INCREMENT,
-    minutes_plated            INT NOT NULL,
+    seconds_played            INT NOT NULL,
     field_goals_made          INT NOT NULL,
     field_goals_attempted     INT NOT NULL,
     three_pointers_made       INT NOT NULL,

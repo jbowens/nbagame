@@ -111,7 +111,7 @@ type StatLine struct {
 // ToStats converts a StatLine into a data Stats struct.
 func (sl *StatLine) ToStats() *data.Stats {
 	return &data.Stats{
-		MinutesPlayed:          sl.MinutesPlayed,
+		SecondsPlayed:          MinuteSecondStringToSeconds(sl.MinutesPlayed),
 		FieldGoalsMade:         sl.FieldGoalsMade,
 		FieldGoalsAttempted:    sl.FieldGoalsAttempted,
 		FieldGoalPercentage:    sl.FieldGoalPercentage,

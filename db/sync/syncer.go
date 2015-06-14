@@ -152,15 +152,18 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 		throttler.run(func() error {
 			details, err := api.Games.Details(string(id))
 			if err != nil {
+				s.log("err: %s", err)
 				return err
 			}
 
 			if err := s.db.DB.Replace(details); err != nil {
+				s.log("err: %s", err)
 				return err
 			}
 			for _, official := range details.Officials {
 				officiated := &data.Officiated{GameID: id, OfficialID: official.ID}
 				if err := s.db.DB.Replace(official, officiated); err != nil {
+					s.log("err: %s", err)
 					return err
 				}
 			}
@@ -168,15 +171,18 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 			// Sync the box score too
 			boxscore, err := api.Games.BoxScore(string(id))
 			if err != nil {
+				s.log("err: %s", err)
 				return err
 			}
 			for _, ts := range boxscore.TeamStats {
 				if err := s.db.RecordTeamGameStats(ts.TeamID, id, &ts.Stats); err != nil {
+					s.log("err: %s", err)
 					return err
 				}
 			}
 			for _, ps := range boxscore.PlayerStats {
 				if err := s.db.RecordPlayerGameStats(ps.PlayerID, id, &ps.Stats); err != nil {
+					s.log("err: %s", err)
 					return err
 				}
 			}

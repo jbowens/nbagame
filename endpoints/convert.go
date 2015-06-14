@@ -18,6 +18,10 @@ func ConvertGameStatus(statusID int) data.GameStatus {
 	return data.Unknown
 }
 
+func MinuteSecondStringToSeconds(secondString string) int {
+	return HourMinuteStringToMinutes(secondString)
+}
+
 // HourMinuteStringToMinutes converts a string containing hours and minutes, ie "2:06"
 // to the number of minutes.
 func HourMinuteStringToMinutes(hourString string) int {

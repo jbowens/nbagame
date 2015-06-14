@@ -38,7 +38,7 @@ type PlayerGameStats struct {
 // duration.
 type Stats struct {
 	ID                     int     `json:"-" db:"id"`
-	MinutesPlayed          string  `json:"minutes_played" db:"minutes_played"`
+	SecondsPlayed          int     `json:"seconds_played" db:"seconds_played"`
 	FieldGoalsMade         int     `json:"field_goals_made" db:"field_goals_made"`
 	FieldGoalsAttempted    int     `json:"field_goals_attempted" db:"field_goals_attempted"`
 	FieldGoalPercentage    float64 `json:"field_goal_percentage" db:"-"`
