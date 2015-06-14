@@ -21,7 +21,7 @@ func ConvertGameStatus(statusID int) data.GameStatus {
 // HourMinuteStringToMinutes converts a string containing hours and minutes, ie "2:06"
 // to the number of minutes.
 func HourMinuteStringToMinutes(hourString string) int {
-	pieces := strings.Split(hourString, "-")
+	pieces := strings.Split(hourString, ":")
 	if len(pieces) < 2 {
 		return 0
 	}

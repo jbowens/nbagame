@@ -1,6 +1,9 @@
 package data
 
-import "time"
+import (
+	"database/sql/driver"
+	"time"
+)
 
 var gameStatusStrings = map[GameStatus]string{
 	Unknown:   "UNKNOWN",
@@ -15,6 +18,10 @@ type GameID string
 
 func (id GameID) String() string {
 	return string(id)
+}
+
+func (g GameID) Value() (driver.Value, error) {
+	return string(g), nil
 }
 
 // GameStatus indicates the status of a game.
@@ -35,27 +42,31 @@ func (s GameStatus) String() string {
 	return gameStatusStrings[s]
 }
 
+func (s GameStatus) Value() (driver.Value, error) {
+	return int64(s), nil
+}
+
 // Game holds basic information about a NBA game.
 type Game struct {
-	ID                GameID     `json:"id"`
-	HomeTeamID        int        `json:"home_team_id"`
-	VisitorTeamID     int        `json:"visitor_team_id"`
-	Season            Season     `json:"season"`
-	Status            GameStatus `json:"status"`
-	LastMeetingGameID GameID     `json:"last_meeting_game_id"`
+	ID                GameID     `json:"id" db:"id"`
+	HomeTeamID        int        `json:"home_team_id" db:"home_team_id"`
+	VisitorTeamID     int        `json:"visitor_team_id" db:"visitor_team_id"`
+	Season            Season     `json:"season" db:"season"`
+	Status            GameStatus `json:"status" db:"status"`
+	LastMeetingGameID GameID     `json:"last_meeting_game_id" db:"last_meeting_game_id"`
 }
 
 // GameDetails provides detailed information and summary of an NBA game.
 type GameDetails struct {
 	Game
-	Date          time.Time     `json:"date"`
-	LengthMinutes int           `json:"length_minutes"`
-	Attendance    int           `json:"attendance"`
+	Date          time.Time     `json:"date" db:"time"`
+	LengthMinutes int           `json:"length_minutes" db:"length_minutes"`
+	Attendance    int           `json:"attendance" db:"attendance"`
 	Officials     []*Official   `json:"officials"`
 	HomePoints    *PointSummary `json:"home_points"`
 	VisitorPoints *PointSummary `json:"visitor_points"`
-	LeadChanges   int           `json:"lead_changes"`
-	TimesTied     int           `json:"times_tied"`
+	LeadChanges   int           `json:"lead_changes" db:"lead_changes"`
+	TimesTied     int           `json:"times_tied" db:"times_tied"`
 }
 
 // PointSummary provides aggregate team point statistics.

@@ -1,6 +1,7 @@
 package data
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"strconv"
 	"strings"
@@ -28,6 +29,10 @@ func init() {
 		seasonStr = fmt.Sprintf("%d-%s", year-1, strconv.Itoa(year)[2:])
 	}
 	CurrentSeason = Season(seasonStr)
+}
+
+func (s Season) Value() (driver.Value, error) {
+	return string(s), nil
 }
 
 // AddYears returns the season identifier the given number of years away. Years may

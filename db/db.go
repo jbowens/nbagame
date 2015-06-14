@@ -12,6 +12,7 @@ import (
 // DB encapsulates a connection to an NBAGame database.
 type DB struct {
 	DB        *squalor.DB
+	Games     *squalor.Model
 	Officials *squalor.Model
 	Players   *squalor.Model
 	Teams     *squalor.Model
@@ -40,6 +41,10 @@ func New(env string, confDirectory string) (*DB, error) {
 }
 
 func (db *DB) init() (err error) {
+	db.Games, err = db.DB.BindModel("games", &data.GameDetails{})
+	if err != nil {
+		return err
+	}
 	db.Officials, err = db.DB.BindModel("officials", &data.Official{})
 	if err != nil {
 		return err

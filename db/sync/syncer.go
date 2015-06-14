@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/jbowens/nbagame"
+	"github.com/jbowens/nbagame/data"
 	"github.com/jbowens/nbagame/db"
 )
 
@@ -15,6 +16,7 @@ const (
 // Syncer handles syncing data from the NBA API to a MySQL database.
 type Syncer struct {
 	Logger *log.Logger
+	api    *nbagame.APIClient
 	db     *db.DB
 }
 
@@ -31,10 +33,26 @@ func New(env string, dbconfLocation string) (*Syncer, error) {
 	}, nil
 }
 
+// API returns the APIClient used by this syncer. This may be the default,
+// so be careful with mutating the client.
+func (s *Syncer) API() *nbagame.APIClient {
+	// If the API to use is configured on this syncer, return that.
+	if s.api != nil {
+		return s.api
+	}
+	// Otherwise, use the default APIClient.
+	return &nbagame.API
+}
+
+// SetAPI sets the nbagame APIClient to use when syncing.
+func (s *Syncer) SetAPI(api *nbagame.APIClient) {
+	s.api = api
+}
+
 // SyncAllTeams syncs all teams to the database. Running this after teams have already
 // been synced will update teams already in the database.
 func (s *Syncer) SyncAllTeams() (int, error) {
-	teams, err := nbagame.API.Teams.All()
+	teams, err := s.API().Teams.All()
 	if err != nil {
 		return 0, err
 	}
@@ -51,7 +69,7 @@ func (s *Syncer) SyncAllTeams() (int, error) {
 
 // SyncAllPlayers syncs all the players to the database. Running twice will update players.
 func (s *Syncer) SyncAllPlayers() (int, error) {
-	players, err := nbagame.API.Players.Historical()
+	players, err := s.API().Players.Historical()
 	if err != nil {
 		return 0, err
 	}
@@ -90,6 +108,72 @@ func (s *Syncer) SyncAllPlayers() (int, error) {
 	}
 
 	return len(players), retError
+}
+
+// SyncAllGames syncs all the games for the given season to the database. Running twice will update the
+// games and find any new games.
+func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
+	api := nbagame.Season(season)
+
+	teams, err := s.API().Teams.All()
+	if err != nil {
+		return 0, err
+	}
+
+	// First retireve all of the game IDs for this season. Unfortunately, we have
+	// to make 1 request per team to retrieve all of the games.
+	gameIDSet := make(map[data.GameID]struct{})
+	throttler := newThrottler(maximumConcurrentRequests)
+	for _, team := range teams {
+		t := team
+		throttler.run(func() error {
+			gameIDs, err := api.Games.PlayedBy(t.ID)
+			if err != nil {
+				return err
+			}
+			s.log("found %v games for %s %s", len(gameIDs), t.City, t.Name)
+
+			for _, gameID := range gameIDs {
+				gameIDSet[gameID] = struct{}{}
+			}
+			return nil
+		})
+	}
+	if err := throttler.wait(); err != nil {
+		return 0, err
+	}
+
+	s.log("going to start syncing details for %v games", len(gameIDSet))
+
+	// Now, we retrieve each individual game concurrently, and insert it into the database.
+	throttler = newThrottler(maximumConcurrentRequests)
+	for gameID := range gameIDSet {
+		id := gameID
+		throttler.run(func() error {
+			details, err := api.Games.Details(string(id))
+			if err != nil {
+				return err
+			}
+
+			if err := s.db.DB.Replace(details); err != nil {
+				s.log("error: %s", err)
+				return err
+			}
+			for _, official := range details.Officials {
+				if err := s.db.DB.Replace(official); err != nil {
+					s.log("error: %s", err)
+					return err
+				}
+			}
+
+			s.log("processed game %s from %v", id, details.Date)
+			return nil
+		})
+	}
+	if err := throttler.wait(); err != nil {
+		return 0, err
+	}
+	return len(gameIDSet), nil
 }
 
 func (s *Syncer) logError(err error) {

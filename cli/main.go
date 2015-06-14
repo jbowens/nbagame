@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/codegangsta/cli"
+	"github.com/jbowens/nbagame/data"
 	"github.com/jbowens/nbagame/db/sync"
 )
 
@@ -46,6 +47,20 @@ func main() {
 			Aliases: []string{"s"},
 			Usage:   "sync a data type to the database",
 			Subcommands: []cli.Command{
+				{
+					Name:   "games",
+					Usage:  "sync all nba games for a season to the database",
+					Before: before,
+					Action: func(c *cli.Context) {
+						count, err := syncer.SyncAllGames(data.CurrentSeason)
+						if err != nil {
+							fmt.Println("error syncing games: ", err)
+							return
+						}
+
+						fmt.Println("Synced", count, "games to the database.")
+					},
+				},
 				{
 					Name:   "teams",
 					Usage:  "sync all nba teams to the database",
