@@ -32,6 +32,18 @@ type APIClient struct {
 	season data.Season
 }
 
+// Season retrieves the season that this API client is configured to. Not all
+// functions are constrained by the season.
+func (api *APIClient) Season() data.Season {
+	return api.season
+}
+
+// SetSeason sets the season that this API client is configured to. Not all
+// functions are constrained by the season.
+func (api *APIClient) SetSeason(season data.Season) {
+	api.season = season
+}
+
 // Season creates an API client for the given season.
 func Season(season data.Season) *APIClient {
 	api := &APIClient{
@@ -63,7 +75,7 @@ type Players struct {
 func (c *Players) All() ([]*data.Player, error) {
 	params := endpoints.CommonAllPlayersParams{
 		LeagueID:            "00",
-		Season:              data.CurrentSeason.String(),
+		Season:              c.client.season.String(),
 		IsOnlyCurrentSeason: 1,
 	}
 	var resp endpoints.CommonAllPlayersResponse
@@ -77,7 +89,7 @@ func (c *Players) All() ([]*data.Player, error) {
 func (c *Players) Historical() ([]*data.Player, error) {
 	params := endpoints.CommonAllPlayersParams{
 		LeagueID:            "00",
-		Season:              data.CurrentSeason.String(),
+		Season:              c.client.season.String(),
 		IsOnlyCurrentSeason: 0,
 	}
 	var resp endpoints.CommonAllPlayersResponse
@@ -125,7 +137,7 @@ func (c *Games) BoxScore(gameID string) (*data.BoxScore, error) {
 	var resp endpoints.BoxScoreTraditionalResponse
 	if err := c.client.Requester.Request("boxscoretraditionalv2", &endpoints.BoxScoreTraditionalParams{
 		GameID:      gameID,
-		Season:      data.CurrentSeason.String(),
+		Season:      c.client.season.String(),
 		SeasonType:  "Regular Season",
 		StartPeriod: 1,
 		EndPeriod:   10,
@@ -149,7 +161,7 @@ func (c *Games) PlayByPlay(gameID string) ([]*data.Event, error) {
 	var resp endpoints.PlayByPlayResponse
 	if err := c.client.Requester.Request("playbyplayv2", &endpoints.PlayByPlayParams{
 		GameID:      gameID,
-		Season:      data.CurrentSeason.String(),
+		Season:      c.client.season.String(),
 		SeasonType:  "RegularSeason",
 		StartPeriod: 1,
 		EndPeriod:   10,
