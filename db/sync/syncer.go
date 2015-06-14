@@ -156,12 +156,11 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 			}
 
 			if err := s.db.DB.Replace(details); err != nil {
-				s.log("error: %s", err)
 				return err
 			}
 			for _, official := range details.Officials {
-				if err := s.db.DB.Replace(official); err != nil {
-					s.log("error: %s", err)
+				officiated := &data.Officiated{GameID: id, OfficialID: official.ID}
+				if err := s.db.DB.Replace(official, officiated); err != nil {
 					return err
 				}
 			}
