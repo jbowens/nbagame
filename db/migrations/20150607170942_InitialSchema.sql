@@ -77,6 +77,7 @@ CREATE TABLE `stats` (
     personal_fouls            INT NOT NULL,
     points                    INT NOT NULL,
     plus_minus                INT NOT NULL,
+    UNIQUE(game_id, team_id, player_id),
     INDEX(team_id, game_id),
     INDEX(player_id, game_id)
 );
