@@ -77,6 +77,20 @@ CREATE TABLE `stats` (
     PRIMARY KEY(id)
 );
 
+CREATE TABLE `player_game_stats` (
+    player_id   INT NOT NULL,
+    game_id     INT NOT NULL,
+    stats_id    INT NOT NULL,
+    PRIMARY KEY(player_id, game_id)
+);
+
+CREATE TABLE `team_game_stats` (
+    team_id     INT NOT NULL,
+    game_id     INT NOT NULL,
+    stats_id    INT NOT NULL,
+    PRIMARY KEY(team_id, game_id)
+);
+
 CREATE TABLE `officials` (
     id            INT NOT NULL PRIMARY KEY,
     first_name    VARCHAR(255) NULL,
@@ -108,6 +122,8 @@ CREATE TABLE `gameplay_events` (
 DROP TABLE `teams`;
 DROP TABLE `games`;
 DROP TABLE `stats`;
+DROP TABLE `player_game_stats`;
+DROP TABLE `team_game_stats`;
 DROP TABLE `players`;
 DROP TABLE `officials`;
 DROP TABLE `officiated`;

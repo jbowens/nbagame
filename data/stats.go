@@ -10,6 +10,13 @@ type TeamStats struct {
 	Stats
 }
 
+// TeamGameStats joins between the team, game and stats tables.
+type TeamGameStats struct {
+	TeamID  int    `json:"team_id" db:"team_id"`
+	GameID  GameID `json:"game_id" db:"game_id"`
+	StatsID int    `json:"stats_id" db:"stats_id"`
+}
+
 // PlayerStats contains a summary stats line about a player's performance. The time
 // period of the stats depends on the context.
 type PlayerStats struct {
@@ -19,10 +26,18 @@ type PlayerStats struct {
 	Stats
 }
 
+// PlayerGameStats joins between the player, game and stats tables.
+type PlayerGameStats struct {
+	PlayerID int    `json:"player_id" db:"player_id"`
+	GameID   GameID `json:"game_id" db:"game_id"`
+	StatsID  int    `json:"stats_id" db:"stats_id"`
+}
+
 // Stats contains a stat line. These are sometimes incorporated into other structs
 // that provide additional context about who the stats apply to and over what
 // duration.
 type Stats struct {
+	ID                     int     `json:"-" db:"id"`
 	MinutesPlayed          string  `json:"minutes_played" db:"minutes_played"`
 	FieldGoalsMade         int     `json:"field_goals_made" db:"field_goals_made"`
 	FieldGoalsAttempted    int     `json:"field_goals_attempted" db:"field_goals_attempted"`

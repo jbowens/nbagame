@@ -165,6 +165,22 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 				}
 			}
 
+			// Sync the box score too
+			boxscore, err := api.Games.BoxScore(string(id))
+			if err != nil {
+				return err
+			}
+			for _, ts := range boxscore.TeamStats {
+				if err := s.db.RecordTeamGameStats(ts.TeamID, id, &ts.Stats); err != nil {
+					return err
+				}
+			}
+			for _, ps := range boxscore.PlayerStats {
+				if err := s.db.RecordPlayerGameStats(ps.PlayerID, id, &ps.Stats); err != nil {
+					return err
+				}
+			}
+
 			s.log("processed game %s from %v", id, details.Date)
 			return nil
 		})
