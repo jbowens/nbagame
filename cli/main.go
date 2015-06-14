@@ -89,6 +89,20 @@ func main() {
 						fmt.Println("Synced", count, "players to the database.")
 					},
 				},
+				{
+					Name:   "shots",
+					Usage:  "sync all shots in a season to the database",
+					Before: before,
+					Action: func(c *cli.Context) {
+						err := syncer.SyncAllShots()
+						if err != nil {
+							fmt.Println("error syncing shots:", err)
+							return
+						}
+
+						fmt.Println("Synced all shots to the database.")
+					},
+				},
 			},
 		},
 	}

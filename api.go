@@ -116,6 +116,34 @@ func (c *Players) Details(playerID int) (*data.PlayerDetails, error) {
 	return resp.CommonPlayerInfo[0].ToPlayerDetails()
 }
 
+// Shots returns all of the given player's shots in the season.
+func (c *Players) Shots(playerID int) ([]*data.Shot, error) {
+	var resp endpoints.PlayerShotLogResponse
+	if err := c.client.Requester.Request("playerdashptshotlog", &endpoints.PlayerShotLogParams{
+		DateFrom:       "",
+		DateTo:         "",
+		GameSegment:    "",
+		LastNGames:     0,
+		LeagueID:       "00",
+		Location:       "",
+		Month:          0,
+		OpponentTeamID: 0,
+		Outcome:        "",
+		Period:         0,
+		PlayerID:       playerID,
+		Season:         c.client.season.String(),
+		SeasonSegment:  "",
+		SeasonType:     "Regular Season",
+		TeamID:         0,
+		VsConference:   "",
+		VsDivision:     "",
+	}, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp.ToData(), nil
+}
+
 type Games struct {
 	client *APIClient
 }

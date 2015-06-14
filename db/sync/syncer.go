@@ -197,6 +197,47 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 	return len(gameIDSet), nil
 }
 
+// SyncAllShots syncs all the shots in the entire season to the database. Running twice will
+// update shots and add any shots that have occurred since the last sync.
+func (s *Syncer) SyncAllShots() error {
+	api := s.API()
+
+	players, err := api.Players.All()
+	if err != nil {
+		return err
+	}
+
+	throttler := newThrottler(maximumConcurrentRequests)
+	for _, player := range players {
+		player := player
+		throttler.run(func() error {
+			shots, err := api.Players.Shots(player.ID)
+			if err != nil {
+				s.log("error: %s", err)
+				return err
+			}
+
+			toInsert := make([]interface{}, len(shots))
+			for idx, shot := range shots {
+				shot.PlayerID = player.ID
+				toInsert[idx] = shot
+			}
+
+			if err := s.db.DB.Replace(toInsert...); err != nil {
+				s.log("error: %s", err)
+				return err
+			}
+			s.log("synced shots for %s %s", player.FirstName, player.LastName)
+			return nil
+		})
+	}
+	if err := throttler.wait(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *Syncer) logError(err error) {
 	if err != nil {
 		s.log("error: %s", err)
