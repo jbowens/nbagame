@@ -57,10 +57,7 @@ CREATE TABLE `players` (
 );
 
 CREATE TABLE `stats` (
-    id                        INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    game_id                   VARCHAR(20) NULL,
-    team_id                   INT NULL,
-    player_id                 INT NULL,
+    id                        INT NOT NULL AUTO_INCREMENT,
     minutes_plated            INT NOT NULL,
     field_goals_made          INT NOT NULL,
     field_goals_attempted     INT NOT NULL,
@@ -77,9 +74,7 @@ CREATE TABLE `stats` (
     personal_fouls            INT NOT NULL,
     points                    INT NOT NULL,
     plus_minus                INT NOT NULL,
-    UNIQUE(game_id, team_id, player_id),
-    INDEX(team_id, game_id),
-    INDEX(player_id, game_id)
+    PRIMARY KEY(id)
 );
 
 CREATE TABLE `officials` (
@@ -112,8 +107,8 @@ CREATE TABLE `gameplay_events` (
 -- SQL section 'Down' is executed when this migration is rolled back
 DROP TABLE `teams`;
 DROP TABLE `games`;
-DROP TABLE `players`;
 DROP TABLE `stats`;
+DROP TABLE `players`;
 DROP TABLE `officials`;
 DROP TABLE `officiated`;
 DROP TABLE `gameplay_events`;
