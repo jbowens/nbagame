@@ -22,7 +22,7 @@ for _, team := range teams {
 
 ## Database Syncing
 
-NBAGame is most useful as a means to populate a MySQL database with up-to-date NBA statistics. The [nbagame/db/sync](https://godoc.org/github.com/jbowens/nbagame/db/sync) package provides a programmatic for syncing data. If you don't need the programmatic interface or will be using a language other than go, you can use the command-line tool in the [nbagame/cli](https://github.com/jbowens/nbagame/tree/master/cli) package. First, follow the directions in the [nbagame/db README](https://github.com/jbowens/nbagame/tree/master/db) to setup your MySQL database and your goose dbconf.yml configuration file. Running `goose up` will create the nbagame schema.
+NBAGame is most useful as a means to populate a MySQL database with up-to-date NBA statistics. The [nbagame/db/sync](https://godoc.org/github.com/jbowens/nbagame/db/sync) package provides a programmatic interface for syncing data. If you don't need the programmatic interface or will be using a language other than go, you can use the command-line tool in the [nbagame/cli](https://github.com/jbowens/nbagame/tree/master/cli) package. First, follow the directions in the [nbagame/db README](https://github.com/jbowens/nbagame/tree/master/db) to setup your MySQL database and your goose dbconf.yml configuration file. Running `goose up` will create the nbagame schema.
 
 Once your database is constructed, `cd cli`. You may run any or all of the following commands to sync the data that you care about:
 
