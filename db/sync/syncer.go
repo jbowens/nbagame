@@ -21,7 +21,7 @@ type Syncer struct {
 }
 
 // New constructs a Syncer from the goose dbconf.yml configuration file. It
-// takes one paramter, the name of the environment to use for the configuration.
+// takes one parameter, the name of the environment to use for the configuration.
 func New(env string, dbconfLocation string) (*Syncer, error) {
 	db, err := db.New(env, dbconfLocation)
 	if err != nil {
