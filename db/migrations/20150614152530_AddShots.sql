@@ -10,7 +10,7 @@ CREATE TABLE `shots` (
     points                      TINYINT(4) NOT NULL,
     home                        TINYINT(1) NOT NULL,
     period                      TINYINT(4) NOT NULL,
-    game_clock                  VARCHAR(10) NOT NULL,
+    game_clock                  SMALLINT NOT NULL,
     shot_clock                  DOUBLE NOT NULL,
     dribbles                    SMALLINT NOT NULL,
     touch_time_seconds          DOUBLE NOT NULL,

@@ -33,7 +33,7 @@ type Shot struct {
 	Points                  int        `json:"points" db:"points"`
 	HomeOrAway              HomeOrAway `json:"home_or_away" db:"home"`
 	Period                  int        `json:"period" db:"period"`
-	GameClock               string     `json:"game_clock" db:"game_clock"`
+	GameClock               int        `json:"game_clock" db:"game_clock"`
 	ShotClock               float64    `json:"shot_clock" db:"shot_clock"`
 	Dribbles                int        `json:"dribbles" db:"dribbles"`
 	TouchTimeSeconds        float64    `json:"touch_time_seconds" db:"touch_time_seconds"`

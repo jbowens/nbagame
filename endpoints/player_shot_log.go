@@ -84,7 +84,7 @@ func (r *PlayerShotRow) ToData() *data.Shot {
 		Points:                  r.Points,
 		HomeOrAway:              homeOrAway,
 		Period:                  r.Period,
-		GameClock:               r.GameClock,
+		GameClock:               MinuteSecondStringToSeconds(r.GameClock),
 		ShotClock:               r.ShotClock,
 		Dribbles:                r.Dribbles,
 		TouchTimeSeconds:        r.TouchTime,
