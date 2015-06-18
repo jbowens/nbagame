@@ -41,4 +41,9 @@ type Shot struct {
 	PointsType              int        `json:"points_type" db:"points_type"`
 	ClosestDefender         int        `json:"closest_defender_player_id" db:"closest_defender_player_id"`
 	ClosestDefenderDistance float64    `json:"closest_defender_distance" db:"closest_defender_distance"`
+	Type                    string     `json:"type" db:"shot_type"`
+	Description             string     `json:"description" db:"description"`
+	Zone                    string     `json:"zone" db:"zone"`
+	LocationX               int        `json:"location_x" db:"location_x"`
+	LocationY               int        `json:"location_y" db:"location_y"`
 }
