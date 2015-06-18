@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql/driver"
+	"errors"
 	"time"
 )
 
@@ -22,6 +23,18 @@ func (id GameID) String() string {
 
 func (g GameID) Value() (driver.Value, error) {
 	return string(g), nil
+}
+
+func (g *GameID) Scan(src interface{}) error {
+	switch t := src.(type) {
+	case string:
+		*g = GameID(t)
+	case []byte:
+		*g = GameID(string(t))
+	default:
+		return errors.New("Incompatible type for GameID")
+	}
+	return nil
 }
 
 // GameStatus indicates the status of a game.

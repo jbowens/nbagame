@@ -80,6 +80,7 @@ CREATE TABLE `stats` (
 CREATE TABLE `player_game_stats` (
     player_id   INT NOT NULL,
     game_id     INT NOT NULL,
+    team_id     INT NOT NULL,
     stats_id    INT NOT NULL,
     PRIMARY KEY(player_id, game_id)
 );

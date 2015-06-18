@@ -181,7 +181,7 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 				}
 			}
 			for _, ps := range boxscore.PlayerStats {
-				if err := s.db.RecordPlayerGameStats(ps.PlayerID, id, &ps.Stats); err != nil {
+				if err := s.db.RecordPlayerGameStats(ps.PlayerID, id, ps.TeamID, &ps.Stats); err != nil {
 					s.log("err: %s", err)
 					return err
 				}

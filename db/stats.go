@@ -9,10 +9,11 @@ import (
 // RecordPlayerGameStats records stats about a player's performance in an individual
 // game. It performs a lookup first to ensure that the player's stats haven't already
 // been synced. If they have, it will update them.
-func (db *DB) RecordPlayerGameStats(playerID int, gameID data.GameID, stats *data.Stats) error {
+func (db *DB) RecordPlayerGameStats(playerID int, gameID data.GameID, teamID int, stats *data.Stats) error {
 	playerGameStats := data.PlayerGameStats{
 		PlayerID: playerID,
 		GameID:   gameID,
+		TeamID:   teamID,
 	}
 
 	txn, err := db.DB.Begin()
