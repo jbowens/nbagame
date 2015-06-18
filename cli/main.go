@@ -94,13 +94,25 @@ func main() {
 					Usage:  "sync all shots in a season to the database",
 					Before: before,
 					Action: func(c *cli.Context) {
-						err := syncer.SyncAllShots()
-						if err != nil {
+						if err := syncer.SyncAllShots(); err != nil {
 							fmt.Println("error syncing shots:", err)
 							return
 						}
 
 						fmt.Println("Synced all shots to the database.")
+					},
+				},
+				{
+					Name:   "shot_details",
+					Usage:  "sync all shot locations in a season to the database",
+					Before: before,
+					Action: func(c *cli.Context) {
+						if err := syncer.SyncShotDetails(); err != nil {
+							fmt.Println("error syncing shots details:", err)
+							return
+						}
+
+						fmt.Println("Synced all shot details to the database.")
 					},
 				},
 			},

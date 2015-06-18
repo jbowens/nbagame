@@ -7,6 +7,7 @@ import (
 	"github.com/jbowens/nbagame"
 	"github.com/jbowens/nbagame/data"
 	"github.com/jbowens/nbagame/db"
+	"github.com/jbowens/nbagame/endpoints"
 )
 
 const (
@@ -233,6 +234,46 @@ func (s *Syncer) SyncAllShots() error {
 	}
 	if err := throttler.wait(); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+// SyncShotDetails syncs additional details about shots like the location of the player
+// on the court when they took the shot. This syncing function requires that games and
+// shots already be synced.
+func (s *Syncer) SyncShotDetails() error {
+	api := s.API()
+
+	var playerGames []struct {
+		data.PlayerGameStats
+		Season string `db:"season"`
+	}
+	if err := s.db.DB.Select(&playerGames, "SELECT `player_game_stats`.*, games.season FROM `player_game_stats` LEFT JOIN `games` ON `player_game_stats`.`game_id` = `games`.`id`"); err != nil {
+		return err
+	}
+
+	// TODO: Handle "Regular Season" vs playoffs
+	for _, playerGame := range playerGames {
+		// Query for this player's shot chart in this game.
+		var resp endpoints.ShotChartDetailResponse
+		if err := api.Requester.Request("shotchartdetail", &endpoints.ShotChartDetailParams{
+			ContextMeasure: "FGA",
+			EndPeriod:      10,
+			EndRange:       28800,
+			GameID:         string(playerGame.GameID),
+			LeagueID:       "00",
+			PlayerID:       playerGame.PlayerID,
+			Season:         playerGame.Season,
+			SeasonType:     "Regular Season",
+			StartPeriod:    1,
+			TeamID:         playerGame.TeamID,
+		}, &resp); err != nil {
+			s.log("error for %v, %s: %s", playerGame.PlayerID, playerGame.GameID, err)
+			continue
+		}
+		// TODO(jackson): Finish
+		s.log("found %v shots for %v, %s", len(resp.ShotDetails), playerGame.PlayerID, playerGame.GameID)
 	}
 
 	return nil

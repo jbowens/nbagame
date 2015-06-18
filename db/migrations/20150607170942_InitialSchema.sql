@@ -18,7 +18,7 @@ CREATE TABLE `teams` (
 );
 
 CREATE TABLE `games` (
-    id                    VARCHAR(20) NOT NULL PRIMARY KEY,
+    id                    CHAR(10) NOT NULL PRIMARY KEY,
     season                CHAR(7) NOT NULL,
     home_team_id          INT NOT NULL,
     visitor_team_id       INT NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE `stats` (
 
 CREATE TABLE `player_game_stats` (
     player_id   INT NOT NULL,
-    game_id     INT NOT NULL,
+    game_id     CHAR(10) NOT NULL,
     team_id     INT NOT NULL,
     stats_id    INT NOT NULL,
     PRIMARY KEY(player_id, game_id)
@@ -87,7 +87,7 @@ CREATE TABLE `player_game_stats` (
 
 CREATE TABLE `team_game_stats` (
     team_id     INT NOT NULL,
-    game_id     INT NOT NULL,
+    game_id     CHAR(10) NOT NULL,
     stats_id    INT NOT NULL,
     PRIMARY KEY(team_id, game_id)
 );
@@ -100,7 +100,7 @@ CREATE TABLE `officials` (
 );
 
 CREATE TABLE `officiated` (
-    game_id     INT NOT NULL,
+    game_id     CHAR(10) NOT NULL,
     official_id INT NOT NULL,
     PRIMARY KEY(game_id, official_id)
 );
