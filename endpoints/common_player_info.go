@@ -47,8 +47,8 @@ type CommonPlayerInfoRow struct {
 	TeamName         string `nbagame:"TEAM_NAME"`
 	TeamAbbreviation string `nbagame:"TEAM_ABBREVIATION"`
 	TeamCity         string `nbagame:"TEAM_CITY"`
-	FromYear         string `nbagame:"FROM_YEAR"`
-	ToYear           string `nbagame:"TO_YEAR"`
+	FromYear         int    `nbagame:"FROM_YEAR"`
+	ToYear           int    `nbagame:"TO_YEAR"`
 	DLeagueFlag      string `nbagame:"DLEAGUE_FLAG"`
 }
 
@@ -67,8 +67,8 @@ func (r *CommonPlayerInfoRow) ToPlayerDetails() (*data.PlayerDetails, error) {
 		TeamName:         r.TeamName,
 		TeamAbbreviation: r.TeamAbbreviation,
 		TeamCity:         r.TeamCity,
-		CareerStartYear:  r.FromYear,
-		CareerEndYear:    r.ToYear,
+		CareerStartYear:  strconv.Itoa(r.FromYear),
+		CareerEndYear:    strconv.Itoa(r.ToYear),
 	}
 
 	// Convert birthdate string into a time.Time
