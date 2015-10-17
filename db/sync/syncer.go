@@ -21,6 +21,13 @@ type Syncer struct {
 	db     *db.DB
 }
 
+// WithDB constructs a new Syncer from an existing DB reference.
+func WithDB(db *db.DB) *Syncer {
+	return &Syncer{
+		db: db,
+	}
+}
+
 // New constructs a Syncer from the goose dbconf.yml configuration file. It
 // takes one parameter, the name of the environment to use for the configuration.
 func New(env string, dbconfLocation string) (*Syncer, error) {
