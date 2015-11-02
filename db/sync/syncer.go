@@ -182,16 +182,18 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 				s.log("err: %s", err)
 				return err
 			}
-			for _, ts := range boxscore.TeamStats {
-				if err := s.db.RecordTeamGameStats(ts.TeamID, id, &ts.Stats); err != nil {
-					s.log("err: %s", err)
-					return err
+			if boxscore != nil {
+				for _, ts := range boxscore.TeamStats {
+					if err := s.db.RecordTeamGameStats(ts.TeamID, id, &ts.Stats); err != nil {
+						s.log("err: %s", err)
+						return err
+					}
 				}
-			}
-			for _, ps := range boxscore.PlayerStats {
-				if err := s.db.RecordPlayerGameStats(ps.PlayerID, id, ps.TeamID, &ps.Stats); err != nil {
-					s.log("err: %s", err)
-					return err
+				for _, ps := range boxscore.PlayerStats {
+					if err := s.db.RecordPlayerGameStats(ps.PlayerID, id, ps.TeamID, &ps.Stats); err != nil {
+						s.log("err: %s", err)
+						return err
+					}
 				}
 			}
 
