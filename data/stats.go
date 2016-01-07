@@ -30,7 +30,7 @@ type PlayerStats struct {
 type PlayerGameStats struct {
 	PlayerID int    `json:"player_id" db:"player_id"`
 	GameID   GameID `json:"game_id" db:"game_id"`
-	TeamID   int    `json:"team_id" db:"team_id"`
+	TeamID   int    `json:"team_id" db:"-"`
 	StatsID  int    `json:"stats_id" db:"stats_id"`
 }
 
