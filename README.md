@@ -27,10 +27,10 @@ NBAGame is most useful as a means to populate a MySQL database with up-to-date N
 Once your database is constructed, `cd cli`. You may run any or all of the following commands to sync the data that you care about:
 
 ```bash
-go run main.go teams
-go run main.go players
-go run main.go games
-go run main.go shots
+go run main.go sync teams
+go run main.go sync players
+go run main.go sync games
+go run main.go sync shots
 ```
 
 By default, the command-line tool only loads data from the current season (except for players, which will load all historical players too). Once you've loaded the data, open a MySQL client and try querying. Here's a sample query that calculates average blocks per game by team.

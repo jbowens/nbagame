@@ -22,6 +22,13 @@ type Syncer struct {
 	db     *db.DB
 }
 
+// WithDB constructs a new Syncer from an existing DB reference.
+func WithDB(db *db.DB) *Syncer {
+	return &Syncer{
+		db: db,
+	}
+}
+
 // New constructs a Syncer from the goose dbconf.yml configuration file. It
 // takes one parameter, the name of the environment to use for the configuration.
 func New(env string, dbconfLocation string) (*Syncer, error) {
@@ -176,16 +183,18 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 				s.log("err: %s", err)
 				return err
 			}
-			for _, ts := range boxscore.TeamStats {
-				if err := s.db.RecordTeamGameStats(ts.TeamID, id, &ts.Stats); err != nil {
-					s.log("err: %s", err)
-					return err
+			if boxscore != nil {
+				for _, ts := range boxscore.TeamStats {
+					if err := s.db.RecordTeamGameStats(ts.TeamID, id, &ts.Stats); err != nil {
+						s.log("err: %s", err)
+						return err
+					}
 				}
-			}
-			for _, ps := range boxscore.PlayerStats {
-				if err := s.db.RecordPlayerGameStats(ps.PlayerID, id, ps.TeamID, &ps.Stats); err != nil {
-					s.log("err: %s", err)
-					return err
+				for _, ps := range boxscore.PlayerStats {
+					if err := s.db.RecordPlayerGameStats(ps.PlayerID, id, ps.TeamID, &ps.Stats); err != nil {
+						s.log("err: %s", err)
+						return err
+					}
 				}
 			}
 
