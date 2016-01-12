@@ -18,7 +18,7 @@ CREATE TABLE `shots` (
     points_type                 TINYINT(4) NOT NULL,
     closest_defender_player_id  INT NOT NULL,
     closest_defender_distance   DOUBLE NOT NULL,
-    shot_type                   VARCHAR(20) NOT NULL,
+    shot_type                   VARCHAR(50) NOT NULL,
     description                 VARCHAR(50) NOT NULL,
     zone                        VARCHAR(50) NOT NULL,
     location_x                  SMALLINT NOT NULL,

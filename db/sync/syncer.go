@@ -3,6 +3,7 @@ package sync
 import (
 	"fmt"
 	"log"
+	"sort"
 
 	"github.com/jbowens/nbagame"
 	"github.com/jbowens/nbagame/data"
@@ -254,26 +255,58 @@ func (s *Syncer) SyncShotDetails() error {
 	}
 
 	// TODO: Handle "Regular Season" vs playoffs
+	throttler := newThrottler(maximumConcurrentRequests)
 	for _, playerGame := range playerGames {
-		// Query for this player's shot chart in this game.
-		var resp endpoints.ShotChartDetailResponse
-		if err := api.Requester.Request("shotchartdetail", &endpoints.ShotChartDetailParams{
-			ContextMeasure: "FGA",
-			EndPeriod:      10,
-			EndRange:       28800,
-			GameID:         string(playerGame.GameID),
-			LeagueID:       "00",
-			PlayerID:       playerGame.PlayerID,
-			Season:         playerGame.Season,
-			SeasonType:     "Regular Season",
-			StartPeriod:    1,
-			TeamID:         playerGame.TeamID,
-		}, &resp); err != nil {
-			s.log("error for %v, %s: %s", playerGame.PlayerID, playerGame.GameID, err)
-			continue
-		}
-		// TODO(jackson): Finish
-		s.log("found %v shots for %v, %s", len(resp.ShotDetails), playerGame.PlayerID, playerGame.GameID)
+		playerGame := playerGame
+		throttler.run(func() error {
+			// Query for this player's shot chart in this game.
+			var resp endpoints.ShotChartDetailResponse
+			if err := api.Requester.Request("shotchartdetail", &endpoints.ShotChartDetailParams{
+				ContextMeasure: "FGA",
+				EndPeriod:      10,
+				EndRange:       28800,
+				GameID:         string(playerGame.GameID),
+				LeagueID:       "00",
+				PlayerID:       playerGame.PlayerID,
+				Season:         playerGame.Season,
+				SeasonType:     "Regular Season",
+				StartPeriod:    1,
+				TeamID:         playerGame.TeamID,
+			}, &resp); err != nil {
+				s.log("error for %v, %s: %s", playerGame.PlayerID, playerGame.GameID, err)
+				return err
+			}
+
+			// Sort the shots by when they occurred in the game. This lets us uniquely determine the shot
+			// by mapping it to the shot_number column.
+			sort.Sort(&resp)
+
+			for i, shotDetail := range resp.ShotDetails {
+				updateQuery := "UPDATE shots SET shot_type = ?, description = ?, zone = ?, location_x = ?, location_y = ? WHERE game_id = ? AND player_id = ? AND shot_number = ?"
+				res, err := s.db.DB.Exec(updateQuery, shotDetail.ActionType, shotDetail.ShotZoneBasic,
+					shotDetail.ShotZoneArea, shotDetail.LocationX, shotDetail.LocationY, playerGame.GameID,
+					playerGame.PlayerID, i+1)
+				if err != nil {
+					s.log("error: %s", err)
+					return err
+				}
+
+				rowsAffected, err := res.RowsAffected()
+				if err != nil {
+					s.log("error: %s", err)
+					return err
+				}
+				if rowsAffected != 1 {
+					s.log("player %v, game %s, shot #%v --- %v rows affected", playerGame.PlayerID, playerGame.GameID, i+1, rowsAffected)
+				}
+			}
+
+			s.log("Synced %v shot details for player %v and game %s", len(resp.ShotDetails), playerGame.PlayerID, playerGame.GameID)
+			return nil
+		})
+	}
+	if err := throttler.wait(); err != nil {
+		return err
 	}
 
 	return nil

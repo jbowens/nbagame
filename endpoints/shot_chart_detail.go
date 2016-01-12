@@ -36,8 +36,30 @@ type ShotChartDetailParams struct {
 
 // ShotChartDetailResponse represents the response returned by the shotchartdetail
 // endpoint.
+//
+// It also implements sort.Interface for sorting shot details by when they happened
+// in the game.
 type ShotChartDetailResponse struct {
 	ShotDetails []*ShotDetailRow `nbagame:"Shot_Chart_Detail"`
+}
+
+func (r *ShotChartDetailResponse) Len() int {
+	return len(r.ShotDetails)
+}
+
+func (r *ShotChartDetailResponse) Less(i, j int) bool {
+	shotI, shotJ := r.ShotDetails[i], r.ShotDetails[j]
+	if shotI.Period < shotJ.Period {
+		return true
+	} else if shotI.Period > shotJ.Period {
+		return false
+	}
+
+	return shotI.MinutesRemaining*60+shotI.SecondsRemaining < shotJ.MinutesRemaining*60+shotJ.SecondsRemaining
+}
+
+func (r *ShotChartDetailResponse) Swap(i, j int) {
+	r.ShotDetails[i], r.ShotDetails[j] = r.ShotDetails[j], r.ShotDetails[i]
 }
 
 // ShotDetailRow represents the schema returned for 'Shot_Chart_Detail' result sets,
