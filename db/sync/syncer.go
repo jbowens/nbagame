@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"sort"
+	"sync"
 
 	"github.com/jbowens/nbagame"
 	"github.com/jbowens/nbagame/data"
@@ -132,6 +133,7 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 	// First retireve all of the game IDs for this season. Unfortunately, we have
 	// to make 1 request per team to retrieve all of the games.
 	gameIDSet := make(map[data.GameID]struct{})
+	var mu sync.Mutex
 	throttler := newThrottler(maximumConcurrentRequests)
 	for _, team := range teams {
 		t := team
@@ -143,7 +145,9 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 			s.log("found %v games for %s %s", len(gameIDs), t.City, t.Name)
 
 			for _, gameID := range gameIDs {
+				mu.Lock()
 				gameIDSet[gameID] = struct{}{}
+				mu.Unlock()
 			}
 			return nil
 		})
