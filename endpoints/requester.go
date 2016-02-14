@@ -50,6 +50,8 @@ func (r *Requester) Request(endpoint string, params interface{}, resp interface{
 	if err != nil {
 		return err
 	}
+	req.Header.Set("Referer", "http://stats.nba.com")
+
 	httpResponse, err := r.client.Do(req)
 	if err != nil {
 		return err
