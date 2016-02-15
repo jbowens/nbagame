@@ -66,7 +66,6 @@ func (r *FranchiseHistoryRow) ToTeam() *data.Team {
 		Games:              r.Games,
 		Wins:               r.Wins,
 		Losses:             r.Losses,
-		WinPercentage:      r.WinPercentage,
 		PlayOffAppearances: r.PlayOffAppearances,
 		DivisionTitles:     r.DivisionTitles,
 		ConferenceTitles:   r.ConferenceTitles,

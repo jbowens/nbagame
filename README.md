@@ -16,7 +16,7 @@ if err != nil {
 }
 
 for _, team := range teams {
-  fmt.Printf("%s, %s - %v\n", team.Name, team.City, team.WinPercentage)
+  fmt.Printf("%s, %s - %v\n", team.Name, team.City, team.Wins)
 }
 ```
 
