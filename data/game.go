@@ -81,6 +81,10 @@ func (s GameStatus) String() string {
 	return gameStatusStrings[s]
 }
 
+func (s GameStatus) MarshalText() ([]byte, error) {
+	return []byte(s.String()), nil
+}
+
 func (s GameStatus) Value() (driver.Value, error) {
 	return int64(s), nil
 }
