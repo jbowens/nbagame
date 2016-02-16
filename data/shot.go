@@ -19,6 +19,10 @@ func (h HomeOrAway) String() string {
 	}
 }
 
+func (h HomeOrAway) MarshalText() ([]byte, error) {
+	return []byte(h.String()), nil
+}
+
 func (h HomeOrAway) Value() (driver.Value, error) {
 	return bool(h), nil
 }

@@ -61,7 +61,7 @@ func (s GameStatus) Value() (driver.Value, error) {
 
 // Game holds basic information about a NBA game.
 type Game struct {
-	ID                GameID     `json:"id" db:"id"`
+	ID                GameID     `json:"id,omitempty" db:"id"`
 	HomeTeamID        int        `json:"home_team_id" db:"home_team_id"`
 	VisitorTeamID     int        `json:"visitor_team_id" db:"visitor_team_id"`
 	Season            Season     `json:"season" db:"season"`

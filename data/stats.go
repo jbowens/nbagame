@@ -38,25 +38,40 @@ type PlayerGameStats struct {
 // that provide additional context about who the stats apply to and over what
 // duration.
 type Stats struct {
-	ID                     int     `json:"-" db:"id"`
-	SecondsPlayed          int     `json:"seconds_played" db:"seconds_played"`
-	FieldGoalsMade         int     `json:"field_goals_made" db:"field_goals_made"`
-	FieldGoalsAttempted    int     `json:"field_goals_attempted" db:"field_goals_attempted"`
-	FieldGoalPercentage    float64 `json:"field_goal_percentage" db:"-"`
-	ThreePointersMade      int     `json:"three_pointers_made" db:"three_pointers_made"`
-	ThreePointersAttempted int     `json:"three_pointers_attempted" db:"three_pointers_attempted"`
-	ThreePointPercentage   float64 `json:"three_point_percentage" db:"-"`
-	FreeThrowsMade         int     `json:"free_throws_made" db:"free_throws_made"`
-	FreeThrowsAttempted    int     `json:"free_throws_attempted" db:"free_throws_attempted"`
-	FreeThrowPercentage    float64 `json:"free_throw_percentage" db:"-"`
-	OffensiveRebounds      int     `json:"offensive_rebounds" db:"offensive_rebounds"`
-	DefensiveRebounds      int     `json:"defensive_rebounds" db:"defensive_rebounds"`
-	Rebounds               int     `json:"rebounds" db:"-"`
-	Assists                int     `json:"assists" db:"assists"`
-	Steals                 int     `json:"steals" db:"steals"`
-	Blocks                 int     `json:"blocks" db:"blocks"`
-	Turnovers              int     `json:"turnovers" db:"turnovers"`
-	PersonalFouls          int     `json:"personal_fouls" db:"personal_fouls"`
-	Points                 int     `json:"points" db:"points"`
-	PlusMinus              int     `json:"plus_minus" db:"plus_minus"`
+	ID                     int      `json:"-" db:"id"`
+	SecondsPlayed          int      `json:"seconds_played" db:"seconds_played"`
+	FieldGoalsMade         int      `json:"field_goals_made" db:"field_goals_made"`
+	FieldGoalsAttempted    int      `json:"field_goals_attempted" db:"field_goals_attempted"`
+	FieldGoalPercentage    *float64 `json:"field_goal_percentage,omitempty" db:"-"`
+	ThreePointersMade      int      `json:"three_pointers_made" db:"three_pointers_made"`
+	ThreePointersAttempted int      `json:"three_pointers_attempted" db:"three_pointers_attempted"`
+	ThreePointPercentage   *float64 `json:"three_point_percentage,omitempty" db:"-"`
+	FreeThrowsMade         int      `json:"free_throws_made" db:"free_throws_made"`
+	FreeThrowsAttempted    int      `json:"free_throws_attempted" db:"free_throws_attempted"`
+	FreeThrowPercentage    *float64 `json:"free_throw_percentage,omitempty" db:"-"`
+	OffensiveRebounds      int      `json:"offensive_rebounds" db:"offensive_rebounds"`
+	DefensiveRebounds      int      `json:"defensive_rebounds" db:"defensive_rebounds"`
+	Rebounds               int      `json:"rebounds" db:"-"`
+	Assists                int      `json:"assists" db:"assists"`
+	Steals                 int      `json:"steals" db:"steals"`
+	Blocks                 int      `json:"blocks" db:"blocks"`
+	Turnovers              int      `json:"turnovers" db:"turnovers"`
+	PersonalFouls          int      `json:"personal_fouls" db:"personal_fouls"`
+	Points                 int      `json:"points" db:"points"`
+	PlusMinus              int      `json:"plus_minus" db:"plus_minus"`
+}
+
+func (s *Stats) Calculate() {
+	if s.FieldGoalsAttempted > 0 {
+		pct := float64(s.FieldGoalsMade) / float64(s.FieldGoalsAttempted)
+		s.FieldGoalPercentage = &pct
+	}
+	if s.ThreePointersAttempted > 0 {
+		pct := float64(s.ThreePointersMade) / float64(s.ThreePointersAttempted)
+		s.ThreePointPercentage = &pct
+	}
+	if s.FreeThrowsAttempted > 0 {
+		pct := float64(s.FreeThrowsMade) / float64(s.FreeThrowsAttempted)
+		s.FreeThrowPercentage = &pct
+	}
 }
