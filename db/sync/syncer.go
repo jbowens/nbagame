@@ -165,18 +165,18 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 		throttler.run(func() error {
 			details, err := api.Games.Details(string(id))
 			if err != nil {
-				s.log("err: %s", err)
+				s.log("err retrieving game details: %s", err)
 				return err
 			}
 
 			if err := s.db.DB.Replace(details); err != nil {
-				s.log("err: %s", err)
+				s.log("err recording game details: %s", err)
 				return err
 			}
 			for _, official := range details.Officials {
 				officiated := &data.Officiated{GameID: id, OfficialID: official.ID}
 				if err := s.db.DB.Replace(official, officiated); err != nil {
-					s.log("err: %s", err)
+					s.log("err saving officiated details: %s", err)
 					return err
 				}
 			}
@@ -184,19 +184,19 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 			// Sync the box score too
 			boxscore, err := api.Games.BoxScore(string(id))
 			if err != nil {
-				s.log("err: %s", err)
+				s.log("err retrieving boxscore: %s", err)
 				return err
 			}
 			if boxscore != nil {
 				for _, ts := range boxscore.TeamStats {
 					if err := s.db.RecordTeamGameStats(ts.TeamID, id, &ts.Stats); err != nil {
-						s.log("err: %s", err)
+						s.log("err recording team game stats: %s", err)
 						return err
 					}
 				}
 				for _, ps := range boxscore.PlayerStats {
 					if err := s.db.RecordPlayerGameStats(ps.PlayerID, id, ps.TeamID, &ps.Stats); err != nil {
-						s.log("err: %s", err)
+						s.log("err recording player game stats: %s", err)
 						return err
 					}
 				}
