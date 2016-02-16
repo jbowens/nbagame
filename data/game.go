@@ -37,6 +37,32 @@ func (g *GameID) Scan(src interface{}) error {
 	return nil
 }
 
+// Date is a wrapper around a time.Time, but only displays
+// the date portion when serialized as JSON.
+type Date time.Time
+
+func (d Date) String() string {
+	return time.Time(d).Format("01/02/2006")
+}
+
+func (d Date) MarshalText() ([]byte, error) {
+	return []byte(d.String()), nil
+}
+
+func (d Date) Value() (driver.Value, error) {
+	return time.Time(d), nil
+}
+
+func (d *Date) Scan(src interface{}) error {
+	switch t := src.(type) {
+	case time.Time:
+		*d = Date(t)
+	default:
+		return errors.New("Incompatible type for Date")
+	}
+	return nil
+}
+
 // GameStatus indicates the status of a game.
 type GameStatus int
 
@@ -72,7 +98,7 @@ type Game struct {
 // GameDetails provides detailed information and summary of an NBA game.
 type GameDetails struct {
 	Game
-	Date          time.Time     `json:"date" db:"time"`
+	Date          Date          `json:"date" db:"time"`
 	LengthMinutes int           `json:"length_minutes" db:"length_minutes"`
 	Attendance    int           `json:"attendance" db:"attendance"`
 	Officials     []*Official   `json:"officials" db:"-"`

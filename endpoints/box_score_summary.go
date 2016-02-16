@@ -92,7 +92,7 @@ func (r *BoxScoreSummaryResponse) ToData() (*data.GameDetails, error) {
 			Status:            summary.ParseStatus(),
 			LastMeetingGameID: data.GameID(r.LastMeeting[0].LastGameID),
 		},
-		Date:          gameDate,
+		Date:          data.Date(gameDate),
 		LengthMinutes: HourMinuteStringToMinutes(r.GameInfo[0].GameTime),
 		Attendance:    r.GameInfo[0].Attendance,
 		HomePoints: &data.PointSummary{
