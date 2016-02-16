@@ -76,7 +76,8 @@ func (r *CommonPlayerInfoRow) ToPlayerDetails() (*data.PlayerDetails, error) {
 	if err != nil {
 		return nil, err
 	}
-	playerDetails.Birthdate = &bday
+	bdayDate := data.Date(bday)
+	playerDetails.Birthdate = &bdayDate
 
 	// Convert height from string into inches integer.
 	heightParts := strings.Split(r.Height, "-")

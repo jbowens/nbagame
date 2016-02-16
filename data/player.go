@@ -1,9 +1,6 @@
 package data
 
-import (
-	"fmt"
-	"time"
-)
+import "fmt"
 
 // RosterStatus indicates whether a player is active on a roster.
 type RosterStatus int
@@ -49,7 +46,7 @@ type PlayerDetails struct {
 	PlayerID         int          `json:"id" db:"id"`
 	FirstName        string       `json:"first_name" db:"first_name"`
 	LastName         string       `json:"last_name" db:"last_name"`
-	Birthdate        *time.Time   `json:"birthdate,omitempty" db:"birthdate"`
+	Birthdate        *Date        `json:"birthdate,omitempty" db:"birthdate"`
 	School           string       `json:"school,omitempty" db:"school"`
 	Country          string       `json:"country,omitempty" db:"country"`
 	Height           int          `json:"height,omitempty" db:"height"`
