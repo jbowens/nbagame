@@ -35,6 +35,32 @@ func (s Season) Value() (driver.Value, error) {
 	return string(s), nil
 }
 
+func (s Season) UnmarshalText(text []byte) error {
+	var startYear, endYear int
+	_, err := fmt.Sscanf(string(text), "%4d-%2d", &startYear, &endYear)
+	if err != nil {
+		return err
+	}
+	s = Season(fmt.Sprintf("%d-%d", startYear, endYear))
+	return nil
+}
+
+// FallYear returns the beginning, fall year of this season. For ex,
+// for "2014-15" it will return 2014.
+func (s Season) FallYear() int {
+	pieces := strings.SplitN(string(s), "-", 2)
+	first, _ := strconv.Atoi(pieces[0])
+	return first
+}
+
+// FallYear returns the end, spring year of this season. For ex,
+// for "2014-15" it will return 2015.
+func (s Season) SpringYear() int {
+	pieces := strings.SplitN(string(s), "-", 2)
+	first, _ := strconv.Atoi(pieces[0])
+	return first + 1
+}
+
 // AddYears returns the season identifier the given number of years away. Years may
 // be negative to go backwards.
 func (s Season) AddYears(years int) Season {

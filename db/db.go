@@ -23,6 +23,23 @@ type DB struct {
 	Teams           *squalor.Model
 }
 
+// WithDSN creates a new connection to an NBAGame database, using
+// the specified MySQL driver and DSN.
+func WithDSN(driver, dsn string) (*DB, error) {
+	conn, err := sql.Open(driver, dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	db := &DB{
+		DB: squalor.NewDB(conn),
+	}
+	if err := db.init(); err != nil {
+		return nil, err
+	}
+	return db, err
+}
+
 // New creates a new connection to an NBAGame database. It takes
 // an environment that should be defined in the goose dbconf.yml file.
 func New(env string, confDirectory string) (*DB, error) {
@@ -31,18 +48,7 @@ func New(env string, confDirectory string) (*DB, error) {
 		return nil, err
 	}
 
-	mysqlDB, err := sql.Open(dbconf.Driver.Name, dbconf.Driver.OpenStr)
-	if err != nil {
-		return nil, err
-	}
-
-	db := &DB{
-		DB: squalor.NewDB(mysqlDB),
-	}
-	if err := db.init(); err != nil {
-		return nil, err
-	}
-	return db, err
+	return WithDSN(dbconf.Driver.Name, dbconf.Driver.OpenStr)
 }
 
 func (db *DB) init() (err error) {

@@ -45,8 +45,8 @@ type PlayerDetails struct {
 	Birthdate        *time.Time   `json:"birthdate" db:"birthdate"`
 	School           string       `json:"school" db:"school"`
 	Country          string       `json:"country" db:"country"`
-	Height           int          `json:"height" db:"height"`
-	Weight           int          `json:"weight" db:"weight"`
+	Height           int          `json:"height,omitempty" db:"height"`
+	Weight           int          `json:"weight,omitempty" db:"weight"`
 	SeasonExperience int          `json:"season_experience" db:"season_experience"`
 	Jersey           string       `json:"jersey" db:"jersey"`
 	Position         string       `json:"position" db:"position"`
