@@ -35,13 +35,13 @@ func (s Season) Value() (driver.Value, error) {
 	return string(s), nil
 }
 
-func (s Season) UnmarshalText(text []byte) error {
+func (s *Season) UnmarshalText(text []byte) error {
 	var startYear, endYear int
 	_, err := fmt.Sscanf(string(text), "%4d-%2d", &startYear, &endYear)
 	if err != nil {
 		return err
 	}
-	s = Season(fmt.Sprintf("%d-%d", startYear, endYear))
+	*s = Season(fmt.Sprintf("%d-%d", startYear, endYear))
 	return nil
 }
 
