@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql/driver"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -40,6 +41,9 @@ func (s *Season) UnmarshalText(text []byte) error {
 	_, err := fmt.Sscanf(string(text), "%4d-%2d", &startYear, &endYear)
 	if err != nil {
 		return err
+	}
+	if endYear != ((startYear + 1) % 100) {
+		return errors.New("invalid season, start and end must be consecutive")
 	}
 	*s = Season(fmt.Sprintf("%d-%d", startYear, endYear))
 	return nil

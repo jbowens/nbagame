@@ -120,14 +120,12 @@ func (s *Syncer) SyncAllPlayers() (int, error) {
 	return len(players), retError
 }
 
-// SyncAllGames syncs all the games for the given season to the database. Running twice will update the
-// games and find any new games.
-func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
+func (s *Syncer) allGameIDs(season data.Season) ([]data.GameID, error) {
 	api := nbagame.Season(season)
 
 	teams, err := s.API().Teams.All()
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	// First retireve all of the game IDs for this season. Unfortunately, we have
@@ -143,7 +141,6 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 				return err
 			}
 			s.log("found %v games for %s %s", len(gameIDs), t.City, t.Name)
-
 			for _, gameID := range gameIDs {
 				mu.Lock()
 				gameIDSet[gameID] = struct{}{}
@@ -153,14 +150,24 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 		})
 	}
 	if err := throttler.wait(); err != nil {
-		return 0, err
+		return nil, err
 	}
 
-	s.log("going to start syncing details for %v games", len(gameIDSet))
+	var gameIDs []data.GameID
+	for gID := range gameIDSet {
+		gameIDs = append(gameIDs, gID)
+	}
+	return gameIDs, nil
+}
+
+// SyncGamesWithIDs syncs all games with the provided game IDs.
+func (s *Syncer) SyncGamesWithIDs(season data.Season, gameIDs []data.GameID) (int, error) {
+	api := nbagame.Season(season)
+	s.log("going to start syncing details for %v games", len(gameIDs))
 
 	// Now, we retrieve each individual game concurrently, and insert it into the database.
-	throttler = newThrottler(maximumConcurrentRequests)
-	for gameID := range gameIDSet {
+	throttler := newThrottler(maximumConcurrentRequests)
+	for _, gameID := range gameIDs {
 		id := gameID
 		throttler.run(func() error {
 			details, err := api.Games.Details(string(id))
@@ -209,7 +216,21 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 	if err := throttler.wait(); err != nil {
 		return 0, err
 	}
-	return len(gameIDSet), nil
+	return len(gameIDs), nil
+}
+
+// SyncAllGames syncs all the games for the given season to the database.
+// Running twice will update the games and find any new games. Note that
+// this function does not optimize and try to predict which data may need
+// updating. It will re-fetch all games, including games that may have
+// happened several months ago.
+func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
+	gameIDs, err := s.allGameIDs(season)
+	if err != nil {
+		return 0, err
+	}
+
+	return s.SyncGamesWithIDs(season, gameIDs)
 }
 
 // SyncAllShots syncs all the shots in the entire season to the database. Running twice will
