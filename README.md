@@ -1,9 +1,13 @@
 # nbagame
-An API to retrieve NBA statistics from stats.nba.com.
+A Go client to retrieve NBA statistics from stats.nba.com. The client also supports syncing data to a mysql database.
 
 [![GoDoc](https://godoc.org/github.com/jbowens/nbagame?status.svg)](https://godoc.org/github.com/jbowens/nbagame)
 
 ![Russ](https://github.com/jbowens/nbagame/blob/master/russ.jpg)
+
+## nbaapi.com
+
+If you're just looking for an API for the NBA, check out the [nbaapi.com repo](https://github.com/jbowens/nbaapi.com) that uses nbagame to sync its database.
 
 ## Overview
 
