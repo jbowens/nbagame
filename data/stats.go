@@ -62,6 +62,7 @@ type Stats struct {
 }
 
 func (s *Stats) Calculate() {
+	s.Rebounds = s.OffensiveRebounds + s.DefensiveRebounds
 	if s.FieldGoalsAttempted > 0 {
 		pct := float64(s.FieldGoalsMade) / float64(s.FieldGoalsAttempted)
 		s.FieldGoalPercentage = &pct

@@ -106,8 +106,8 @@ type GameDetails struct {
 	LengthMinutes int           `json:"length_minutes" db:"length_minutes"`
 	Attendance    int           `json:"attendance" db:"attendance"`
 	Officials     []*Official   `json:"officials" db:"-"`
-	HomePoints    *PointSummary `json:"home_points" db:"-"`
-	VisitorPoints *PointSummary `json:"visitor_points" db:"-"`
+	HomePoints    *PointSummary `json:"home_points,omitempty" db:"-"`
+	VisitorPoints *PointSummary `json:"visitor_points,omitempty" db:"-"`
 	LeadChanges   int           `json:"lead_changes" db:"lead_changes"`
 	TimesTied     int           `json:"times_tied" db:"times_tied"`
 }
