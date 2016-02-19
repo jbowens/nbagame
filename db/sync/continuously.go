@@ -28,12 +28,12 @@ type continuousSyncConfig struct {
 
 // ContinuousOption defines options to the Continuously function
 // that change its behavior.
-type ContinuousOption func(continuousSyncConfig)
+type ContinuousOption func(*continuousSyncConfig)
 
 // PrintErrors returns a ContinuousOption that will cause all errors
 // to be printed to standard error.
 func PrintErrors() ContinuousOption {
-	return func(c continuousSyncConfig) {
+	return func(c *continuousSyncConfig) {
 		c.errorFn = func(e error) {
 			fmt.Fprintf(os.Stderr, "[sync] Continuous sync error: %s\n", e)
 		}
@@ -45,9 +45,13 @@ func PrintErrors() ContinuousOption {
 //
 //     go sync.Continuously(s)
 //
-func Continuously(s *Syncer) {
+func Continuously(s *Syncer, opts ...ContinuousOption) {
 	var c continuousSyncConfig
 	c = defaultContinuousConfig
+
+	for _, opt := range opts {
+		opt(&c)
+	}
 
 	allC := time.Tick(c.allGamesPeriod)
 	newC := time.Tick(c.newGamesPeriod)
