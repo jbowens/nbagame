@@ -105,7 +105,7 @@ func Continuously(s *Syncer, opts ...ContinuousOption) {
 				continue
 			}
 
-			const knownIDsQ = `SELECT id FROM games WHERE season = $1`
+			const knownIDsQ = `SELECT id FROM games WHERE season = ?`
 			var knownIDs []data.GameID
 			err = s.db.DB.Select(&knownIDs, knownIDsQ, data.CurrentSeason)
 			if err != nil {
