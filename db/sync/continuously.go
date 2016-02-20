@@ -10,7 +10,7 @@ import (
 
 var defaultContinuousConfig = continuousSyncConfig{
 	allGamesPeriod:       24 * 3 * time.Hour,
-	newGamesPeriod:       6 * time.Hour,
+	newGamesPeriod:       time.Hour,
 	liveGamesPeriod:      3 * time.Minute,
 	scheduledGamesPeriod: 15 * time.Minute,
 	teamsPeriod:          6 * time.Hour,
