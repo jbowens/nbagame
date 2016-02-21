@@ -98,33 +98,19 @@ func Continuously(s *Syncer, opts ...ContinuousOption) {
 				continue
 			}
 
-		case <-newC:
-			allIDs, err := s.allGameIDs(data.CurrentSeason)
+		case t := <-newC:
+			games, err := s.API().Games.ByDate(t)
 			if err != nil {
 				c.errorFn(err)
 				continue
 			}
 
-			const knownIDsQ = `SELECT id FROM games WHERE season = ?`
-			var knownIDs []data.GameID
-			err = s.db.DB.Select(&knownIDs, knownIDsQ, data.CurrentSeason)
-			if err != nil {
-				c.errorFn(err)
-				continue
-			}
-			knownSet := map[data.GameID]struct{}{}
-			for _, knownID := range knownIDs {
-				knownSet[knownID] = struct{}{}
+			todaysGameIDs := make([]data.GameID, 0, len(games))
+			for _, g := range games {
+				todaysGameIDs = append(todaysGameIDs, g.ID)
 			}
 
-			var newIDs []data.GameID
-			for _, id := range allIDs {
-				if _, ok := knownSet[id]; !ok {
-					newIDs = append(newIDs, id)
-				}
-			}
-
-			_, err = s.SyncGamesWithIDs(data.CurrentSeason, newIDs)
+			_, err = s.SyncGamesWithIDs(data.CurrentSeason, todaysGameIDs)
 			if err != nil {
 				c.errorFn(err)
 				continue
