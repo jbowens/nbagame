@@ -253,9 +253,15 @@ func (c *Games) PlayedBy(teamID int) ([]data.GameID, error) {
 		return nil, err
 	}
 
-	gameIDs := []data.GameID{}
+	gameIDSet := map[data.GameID]struct{}{}
 	for _, game := range resp.TeamGameLog {
-		gameIDs = append(gameIDs, data.GameID(game.GameID))
+		gid := data.GameID(game.GameID)
+		gameIDSet[gid] = struct{}{}
+	}
+
+	var gameIDs []data.GameID
+	for gID := range gameIDSet {
+		gameIDs = append(gameIDs, gID)
 	}
 	return gameIDs, nil
 }
