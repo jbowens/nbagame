@@ -1,5 +1,41 @@
 package data
 
+var (
+	eventTypeToString = map[EventType]string{
+		Other:        "other",
+		Foul:         "foul",
+		FreeThrow:    "free_throw",
+		JumpBall:     "jump_ball",
+		Rebound:      "rebound",
+		ShotAttempt:  "shot_attempt",
+		Steal:        "steal",
+		Substitution: "substitution",
+		Timeout:      "timeout",
+		Turnover:     "turnover",
+		Violation:    "violation",
+	}
+	shotAttemptAttributeToString = map[ShotAttemptAttribute]string{
+		Blocked:      "blocked",
+		Dunk:         "dunk",
+		Fadeaway:     "fadeaway",
+		FingerRoll:   "finger_roll",
+		Floater:      "floater",
+		Hook:         "hook",
+		JumpShot:     "jump_shot",
+		Layup:        "layup",
+		Missed:       "missed",
+		PutBack:      "put_back",
+		PullUp:       "pull_up",
+		Reverse:      "reverse",
+		StepBack:     "step_back",
+		ThreePointer: "three_pointer",
+		TipIn:        "tip_in",
+		Turnaround:   "turnaround",
+		WhileDriving: "while_driving",
+		WhileRunning: "while_running",
+	}
+)
+
 // EventType is an enum for the type of event that occurred in the game.
 type EventType int
 
@@ -16,6 +52,10 @@ const (
 	Turnover
 	Violation
 )
+
+func (et EventType) String() string {
+	return eventTypeToString[et]
+}
 
 // ShotAttemptAttribute is an enum for attributes providing more details about a shot
 // attempt event, for ex. was it a layup? a dunk? alleyoop? was it blocked?
@@ -42,6 +82,10 @@ const (
 	WhileDriving
 	WhileRunning
 )
+
+func (saa ShotAttemptAttribute) String() string {
+	return shotAttemptAttributeToString[saa]
+}
 
 // Event describes an event that occurs within a game.
 // TODO(jackson): Figure out how to map to the database model.
