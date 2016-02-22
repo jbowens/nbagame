@@ -189,22 +189,25 @@ func (s *Syncer) SyncGamesWithIDs(season data.Season, gameIDs []data.GameID) (in
 			}
 
 			// Sync the box score too
-			boxscore, err := api.Games.BoxScore(string(id))
-			if err != nil {
-				s.log("err retrieving boxscore: %s", err)
-				return err
-			}
-			if boxscore != nil {
-				for _, ts := range boxscore.TeamStats {
-					if err := s.db.RecordTeamGameStats(ts.TeamID, id, &ts.Stats); err != nil {
-						s.log("err recording team game stats: %s", err)
-						return err
-					}
+			if details.Status == data.Final {
+				// Box score is only available after the game :(
+				boxscore, err := api.Games.BoxScore(string(id))
+				if err != nil {
+					s.log("err retrieving boxscore: %s", err)
+					return err
 				}
-				for _, ps := range boxscore.PlayerStats {
-					if err := s.db.RecordPlayerGameStats(ps.PlayerID, id, ps.TeamID, &ps.Stats); err != nil {
-						s.log("err recording player game stats: %s", err)
-						return err
+				if boxscore != nil {
+					for _, ts := range boxscore.TeamStats {
+						if err := s.db.RecordTeamGameStats(ts.TeamID, id, &ts.Stats); err != nil {
+							s.log("err recording team game stats: %s", err)
+							return err
+						}
+					}
+					for _, ps := range boxscore.PlayerStats {
+						if err := s.db.RecordPlayerGameStats(ps.PlayerID, id, ps.TeamID, &ps.Stats); err != nil {
+							s.log("err recording player game stats: %s", err)
+							return err
+						}
 					}
 				}
 			}
