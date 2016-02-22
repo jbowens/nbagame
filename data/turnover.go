@@ -26,7 +26,7 @@ const (
 	TurnoverIllegalAssist                     = 20
 	TurnoverPalming                           = 21
 	TurnoverPunchedBall                       = 33
-	TurnoverSwiningElbows                     = 34
+	TurnoverSwingingElbows                    = 34
 	TurnoverBasketFromBelow                   = 35
 	TurnoverIllegalScreen                     = 36
 	TurnoverOffensiveFoul                     = 37
