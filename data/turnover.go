@@ -43,7 +43,10 @@ const (
 )
 
 func (t TurnoverType) String() string {
-	return turnoverToString[t]
+	if s, ok := turnoverToString[t]; ok {
+		return s
+	}
+	return "unknown turnover"
 }
 
 func (t TurnoverType) MarshalText() ([]byte, error) {
