@@ -1,6 +1,9 @@
 package data
 
-import "strings"
+import (
+	"database/sql/driver"
+	"strings"
+)
 
 // TurnoverType defines the different types of turnovers.
 type TurnoverType int
@@ -51,6 +54,14 @@ func (t TurnoverType) String() string {
 
 func (t TurnoverType) MarshalText() ([]byte, error) {
 	return []byte(strings.Replace(t.String(), " ", "_", -1)), nil
+}
+
+func (t TurnoverType) Value() (driver.Value, error) {
+	b, err := t.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+	return string(b), nil
 }
 
 var (

@@ -1,6 +1,9 @@
 package data
 
-import "strings"
+import (
+	"database/sql/driver"
+	"strings"
+)
 
 // FreeThrowType defines the type of free throw.
 type FreeThrowType int
@@ -21,11 +24,22 @@ const (
 )
 
 func (ft FreeThrowType) String() string {
-	return freeThrowToString[ft]
+	if s, ok := freeThrowToString[ft]; ok {
+		return s
+	}
+	return "unknown"
 }
 
 func (ft FreeThrowType) MarshalText() ([]byte, error) {
 	return []byte(strings.Replace(ft.String(), " ", "_", -1)), nil
+}
+
+func (ft FreeThrowType) Value() (driver.Value, error) {
+	b, err := ft.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+	return string(b), nil
 }
 
 var (

@@ -1,6 +1,9 @@
 package data
 
-import "strings"
+import (
+	"database/sql/driver"
+	"strings"
+)
 
 var (
 	shotTypeToString = map[ShotType]string{
@@ -31,12 +34,23 @@ var (
 type ShotType int
 
 func (st ShotType) String() string {
-	return shotTypeToString[st]
+	if s, ok := shotTypeToString[st]; ok {
+		return s
+	}
+	return "unknown"
 }
 
 func (st ShotType) MarshalText() ([]byte, error) {
 	s := st.String()
 	return []byte(strings.Replace(s, " ", "_", -1)), nil
+}
+
+func (st ShotType) Value() (driver.Value, error) {
+	b, err := st.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+	return string(b), nil
 }
 
 const (
