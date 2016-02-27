@@ -89,6 +89,31 @@ func (s GameStatus) Value() (driver.Value, error) {
 	return int64(s), nil
 }
 
+// HomeOrAway indicates whether a game was home or away with respect to a team or
+// player.
+type HomeOrAway bool
+
+const (
+	Home HomeOrAway = true
+	Away HomeOrAway = false
+)
+
+func (h HomeOrAway) String() string {
+	if h == Home {
+		return "Home"
+	} else {
+		return "Away"
+	}
+}
+
+func (h HomeOrAway) MarshalText() ([]byte, error) {
+	return []byte(h.String()), nil
+}
+
+func (h HomeOrAway) Value() (driver.Value, error) {
+	return bool(h), nil
+}
+
 // Game holds basic information about a NBA game.
 type Game struct {
 	ID                GameID     `json:"id,omitempty" db:"id"`

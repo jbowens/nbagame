@@ -1,53 +1,79 @@
 package data
 
-import "database/sql/driver"
+import "strings"
 
-// HomeOrAway indiciates whether a game was home or away with respect to a team or
-// player.
-type HomeOrAway bool
-
-const (
-	Home HomeOrAway = true
-	Away HomeOrAway = false
+var (
+	shotTypeToString = map[ShotType]string{
+		ShotTypeNone:       "no",
+		ShotTypeJump:       "jump",
+		ShotTypeHook:       "hook",
+		ShotTypeLayup:      "layup",
+		ShotTypeDunk:       "dunk",
+		ShotTypeRunning:    "running",
+		ShotTypeDriving:    "driving",
+		ShotTypeAlleyOop:   "alleyoop",
+		ShotTypeReverse:    "reverse",
+		ShotTypeTurnaround: "turnaround",
+		ShotTypeFadeaway:   "fadeaway",
+		ShotTypeBank:       "bank",
+		ShotTypeFingerRoll: "finger roll",
+		ShotTypePutBack:    "put back",
+		ShotTypeFloating:   "floating",
+		ShotTypePullUp:     "pull up",
+		ShotTypeStepBack:   "step back",
+		ShotTypeTipIn:      "tip in",
+		ShotTypeCutting:    "cutting",
+	}
 )
 
-func (h HomeOrAway) String() string {
-	if h == Home {
-		return "Home"
-	} else {
-		return "Away"
+// ShotType is an enum of attributes of a shot attempt. Ex: was it a layup?
+// a dunk? bank shot? put back? etc.
+type ShotType int
+
+func (st ShotType) String() string {
+	return shotTypeToString[st]
+}
+
+func (st ShotType) MarshalText() ([]byte, error) {
+	s := st.String()
+	return []byte(strings.Replace(s, " ", "_", -1)), nil
+}
+
+const (
+	ShotTypeNone ShotType = iota
+	ShotTypeJump
+	ShotTypeHook
+	ShotTypeLayup
+	ShotTypeDunk
+	ShotTypeRunning
+	ShotTypeDriving
+	ShotTypeAlleyOop
+	ShotTypeReverse
+	ShotTypeTurnaround
+	ShotTypeFadeaway
+	ShotTypeBank
+	ShotTypeFingerRoll
+	ShotTypePutBack
+	ShotTypeFloating
+	ShotTypePullUp
+	ShotTypeStepBack
+	ShotTypeTipIn
+	ShotTypeCutting
+)
+
+// ShotDescription describes a shot as a slice of ShotTypes.
+type ShotDescription []ShotType
+
+// Is checks if the shot description contains the provided types.
+func (sd ShotDescription) Is(typs ...ShotType) bool {
+	set := map[ShotType]bool{}
+	for _, typ := range sd {
+		set[typ] = true
 	}
-}
 
-func (h HomeOrAway) MarshalText() ([]byte, error) {
-	return []byte(h.String()), nil
-}
-
-func (h HomeOrAway) Value() (driver.Value, error) {
-	return bool(h), nil
-}
-
-// Shot describes an individual shot within a game.
-type Shot struct {
-	ID                      int        `json:"id" db:"id"`
-	GameID                  GameID     `json:"game_id" db:"game_id"`
-	PlayerID                int        `json:"player_id" db:"player_id"`
-	Number                  int        `json:"number" db:"shot_number"`
-	Made                    bool       `json:"made" db:"made"`
-	Points                  int        `json:"points" db:"points"`
-	HomeOrAway              HomeOrAway `json:"home_or_away" db:"home"`
-	Period                  int        `json:"period" db:"period"`
-	GameClock               int        `json:"game_clock" db:"game_clock"`
-	ShotClock               float64    `json:"shot_clock" db:"shot_clock"`
-	Dribbles                int        `json:"dribbles" db:"dribbles"`
-	TouchTimeSeconds        float64    `json:"touch_time_seconds" db:"touch_time_seconds"`
-	Distance                float64    `json:"distance" db:"distance"`
-	PointsType              int        `json:"points_type" db:"points_type"`
-	ClosestDefender         int        `json:"closest_defender_player_id" db:"closest_defender_player_id"`
-	ClosestDefenderDistance float64    `json:"closest_defender_distance" db:"closest_defender_distance"`
-	Type                    string     `json:"type" db:"shot_type"`
-	Description             string     `json:"description" db:"description"`
-	Zone                    string     `json:"zone" db:"zone"`
-	LocationX               int        `json:"location_x" db:"location_x"`
-	LocationY               int        `json:"location_y" db:"location_y"`
+	var ok bool = true
+	for _, t := range typs {
+		ok = ok && set[t]
+	}
+	return ok
 }

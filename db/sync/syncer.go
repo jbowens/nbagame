@@ -3,13 +3,11 @@ package sync
 import (
 	"fmt"
 	"log"
-	"sort"
 	"sync"
 
 	"github.com/jbowens/nbagame"
 	"github.com/jbowens/nbagame/data"
 	"github.com/jbowens/nbagame/db"
-	"github.com/jbowens/nbagame/endpoints"
 )
 
 const (
@@ -234,119 +232,6 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 	}
 
 	return s.SyncGamesWithIDs(season, gameIDs)
-}
-
-// SyncAllShots syncs all the shots in the entire season to the database. Running twice will
-// update shots and add any shots that have occurred since the last sync.
-func (s *Syncer) SyncAllShots() error {
-	api := s.API()
-
-	players, err := api.Players.All()
-	if err != nil {
-		return err
-	}
-
-	throttler := newThrottler(maximumConcurrentRequests)
-	for _, player := range players {
-		player := player
-		throttler.run(func() error {
-			shots, err := api.Players.Shots(player.ID)
-			if err != nil {
-				s.log("error: %s", err)
-				return err
-			}
-
-			toInsert := make([]interface{}, len(shots))
-			for idx, shot := range shots {
-				shot.PlayerID = player.ID
-				toInsert[idx] = shot
-			}
-
-			if err := s.db.DB.Replace(toInsert...); err != nil {
-				s.log("error: %s", err)
-				return err
-			}
-			s.log("synced shots for %s %s", player.FirstName, player.LastName)
-			return nil
-		})
-	}
-	if err := throttler.wait(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// SyncShotDetails syncs additional details about shots like the location of the player
-// on the court when they took the shot. This syncing function requires that games and
-// shots already be synced.
-func (s *Syncer) SyncShotDetails() error {
-	api := s.API()
-
-	var playerGames []struct {
-		data.PlayerGameStats
-		Season string `db:"season"`
-	}
-	if err := s.db.DB.Select(&playerGames, "SELECT `player_game_stats`.*, games.season FROM `player_game_stats` LEFT JOIN `games` ON `player_game_stats`.`game_id` = `games`.`id`"); err != nil {
-		return err
-	}
-
-	// TODO: Handle "Regular Season" vs playoffs
-	throttler := newThrottler(maximumConcurrentRequests)
-	for _, playerGame := range playerGames {
-		playerGame := playerGame
-		throttler.run(func() error {
-			// Query for this player's shot chart in this game.
-			var resp endpoints.ShotChartDetailResponse
-			if err := api.Requester.Request("shotchartdetail", &endpoints.ShotChartDetailParams{
-				ContextMeasure: "FGA",
-				EndPeriod:      10,
-				EndRange:       28800,
-				GameID:         string(playerGame.GameID),
-				LeagueID:       "00",
-				PlayerID:       playerGame.PlayerID,
-				Season:         playerGame.Season,
-				SeasonType:     "Regular Season",
-				StartPeriod:    1,
-				TeamID:         playerGame.TeamID,
-			}, &resp); err != nil {
-				s.log("error for %v, %s: %s", playerGame.PlayerID, playerGame.GameID, err)
-				return err
-			}
-
-			// Sort the shots by when they occurred in the game. This lets us uniquely determine the shot
-			// by mapping it to the shot_number column.
-			sort.Sort(&resp)
-
-			for i, shotDetail := range resp.ShotDetails {
-				updateQuery := "UPDATE shots SET shot_type = ?, description = ?, zone = ?, location_x = ?, location_y = ? WHERE game_id = ? AND player_id = ? AND shot_number = ?"
-				res, err := s.db.DB.Exec(updateQuery, shotDetail.ActionType, shotDetail.ShotZoneBasic,
-					shotDetail.ShotZoneArea, shotDetail.LocationX, shotDetail.LocationY, playerGame.GameID,
-					playerGame.PlayerID, i+1)
-				if err != nil {
-					s.log("error: %s", err)
-					return err
-				}
-
-				rowsAffected, err := res.RowsAffected()
-				if err != nil {
-					s.log("error: %s", err)
-					return err
-				}
-				if rowsAffected != 1 {
-					s.log("player %v, game %s, shot #%v --- %v rows affected", playerGame.PlayerID, playerGame.GameID, i+1, rowsAffected)
-				}
-			}
-
-			s.log("Synced %v shot details for player %v and game %s", len(resp.ShotDetails), playerGame.PlayerID, playerGame.GameID)
-			return nil
-		})
-	}
-	if err := throttler.wait(); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (s *Syncer) logError(err error) {

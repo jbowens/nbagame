@@ -18,7 +18,6 @@ type DB struct {
 	Players         *squalor.Model
 	Stats           *squalor.Model
 	PlayerGameStats *squalor.Model
-	Shots           *squalor.Model
 	TeamGameStats   *squalor.Model
 	Teams           *squalor.Model
 }
@@ -65,10 +64,6 @@ func (db *DB) init() (err error) {
 		return err
 	}
 	db.Players, err = db.DB.BindModel("players", &data.PlayerDetails{})
-	if err != nil {
-		return err
-	}
-	db.Shots, err = db.DB.BindModel("shots", &data.Shot{})
 	if err != nil {
 		return err
 	}
