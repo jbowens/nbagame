@@ -37,6 +37,7 @@ const (
 	TurnoverOutOfBoundsLostBall               = 40
 	TurnoverSteal                             = 41
 	TurnoverPlayerOutOfBounds                 = 43
+	TurnoverTooManyPlayers                    = 44
 	TurnoverOutOfBoundsBadPass                = 45
 )
 
@@ -77,6 +78,7 @@ var (
 		TurnoverOutOfBoundsLostBall:  "out of bounds lost ball",
 		TurnoverSteal:                "steal",
 		TurnoverPlayerOutOfBounds:    "player out of bounds",
+		TurnoverTooManyPlayers:       "too many players",
 		TurnoverOutOfBoundsBadPass:   "out of bounds bad pass",
 	}
 )
