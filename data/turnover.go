@@ -1,5 +1,7 @@
 package data
 
+import "strings"
+
 // TurnoverType defines the different types of turnovers.
 type TurnoverType int
 
@@ -36,4 +38,45 @@ const (
 	TurnoverSteal                             = 41
 	TurnoverPlayerOutOfBounds                 = 43
 	TurnoverOutOfBoundsBadPass                = 45
+)
+
+func (t TurnoverType) String() string {
+	return turnoverToString[t]
+}
+
+func (t TurnoverType) MarshalText() ([]byte, error) {
+	return []byte(strings.Replace(t.String(), " ", "_", -1)), nil
+}
+
+var (
+	turnoverToString = map[TurnoverType]string{
+		TurnoverUnknown:              "unknown turnover",
+		TurnoverBadPass:              "bad pass",
+		TurnoverLostBall:             "lost ball",
+		TurnoverOutOfBounds:          "out of bounds",
+		TurnoverTraveling:            "traveling",
+		TurnoverFoul:                 "foul",
+		TurnoverDoubleDribble:        "double dribble",
+		TurnoverDiscontinueDribble:   "discontinue dribble",
+		TurnoverThreeSecondViolation: "three second violation",
+		TurnoverFiveSecondViolation:  "five second violation",
+		TurnoverEightSecondViolation: "eight second violation",
+		TurnoverShotClock:            "shot clock violation",
+		TurnoverInbound:              "inbound",
+		TurnoverBackcourt:            "backcourt violation",
+		TurnoverOffensiveGoaltending: "offensive goaltending",
+		TurnoverLaneViolation:        "lane violation",
+		TurnoverJumpBallViolation:    "jump ball violation",
+		TurnoverKickedBall:           "kicked ball",
+		TurnoverSwingingElbows:       "swinging elbows",
+		TurnoverBasketFromBelow:      "basket from below",
+		TurnoverIllegalScreen:        "illegal screen",
+		TurnoverOffensiveFoul:        "offensive foul",
+		TurnoverFiveSecondInbound:    "five second inbound",
+		TurnoverStepOutOfBounds:      "step out of bounds",
+		TurnoverOutOfBoundsLostBall:  "out of bounds lost ball",
+		TurnoverSteal:                "steal",
+		TurnoverPlayerOutOfBounds:    "player out of bounds",
+		TurnoverOutOfBoundsBadPass:   "out of bounds bad pass",
+	}
 )
