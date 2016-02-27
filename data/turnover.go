@@ -27,6 +27,7 @@ const (
 	TurnoverKickedBall                        = 19
 	TurnoverIllegalAssist                     = 20
 	TurnoverPalming                           = 21
+	TurnoverDoublePersonal                    = 23
 	TurnoverPunchedBall                       = 33
 	TurnoverSwingingElbows                    = 34
 	TurnoverBasketFromBelow                   = 35
@@ -69,6 +70,10 @@ var (
 		TurnoverLaneViolation:        "lane violation",
 		TurnoverJumpBallViolation:    "jump ball violation",
 		TurnoverKickedBall:           "kicked ball",
+		TurnoverIllegalAssist:        "illegal assist",
+		TurnoverPalming:              "palming",
+		TurnoverDoublePersonal:       "double personal",
+		TurnoverPunchedBall:          "punched ball",
 		TurnoverSwingingElbows:       "swinging elbows",
 		TurnoverBasketFromBelow:      "basket from below",
 		TurnoverIllegalScreen:        "illegal screen",
