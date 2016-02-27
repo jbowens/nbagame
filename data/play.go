@@ -1,5 +1,10 @@
 package data
 
+import (
+	"database/sql/driver"
+	"strings"
+)
+
 var (
 	eventTypeToString = map[EventType]string{
 		Other:        "other",
@@ -54,7 +59,22 @@ const (
 )
 
 func (et EventType) String() string {
-	return eventTypeToString[et]
+	if s, ok := eventTypeToString[et]; ok {
+		return s
+	}
+	return "other"
+}
+
+func (et EventType) MarshalText() ([]byte, error) {
+	return []byte(strings.Replace(et.String(), " ", "_", -1)), nil
+}
+
+func (et EventType) Value() (driver.Value, error) {
+	b, err := et.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+	return string(b), nil
 }
 
 // ShotAttemptAttribute is an enum for attributes providing more details about a shot
@@ -84,7 +104,22 @@ const (
 )
 
 func (saa ShotAttemptAttribute) String() string {
-	return shotAttemptAttributeToString[saa]
+	if s, ok := shotAttemptAttributeToString[saa]; ok {
+		return s
+	}
+	return "unknown"
+}
+
+func (saa ShotAttemptAttribute) MarshalText() ([]byte, error) {
+	return []byte(strings.Replace(saa.String(), " ", "_", -1)), nil
+}
+
+func (saa ShotAttemptAttribute) Value() (driver.Value, error) {
+	b, err := saa.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+	return string(b), nil
 }
 
 // Event describes an event that occurs within a game.
