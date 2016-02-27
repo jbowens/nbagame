@@ -31,6 +31,7 @@ const (
 	TurnoverIllegalAssist                     = 20
 	TurnoverPalming                           = 21
 	TurnoverDoublePersonal                    = 23
+	TurnoverOppositeBasket                    = 32
 	TurnoverPunchedBall                       = 33
 	TurnoverSwingingElbows                    = 34
 	TurnoverBasketFromBelow                   = 35
@@ -87,6 +88,7 @@ var (
 		TurnoverIllegalAssist:        "illegal assist",
 		TurnoverPalming:              "palming",
 		TurnoverDoublePersonal:       "double personal",
+		TurnoverOppositeBasket:       "opposite basket",
 		TurnoverPunchedBall:          "punched ball",
 		TurnoverSwingingElbows:       "swinging elbows",
 		TurnoverBasketFromBelow:      "basket from below",
