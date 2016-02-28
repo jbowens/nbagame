@@ -17,7 +17,7 @@ const (
 	FoulTypeInbound                          = 5
 	FoulTypeAwayFromPlay                     = 6
 	FoulTypePunching                         = 8
-	FoulTypeCP                               = 9 // ?
+	FoulTypeClearPath                        = 9
 	FoulTypeTechnical                        = 11
 	FoulTypeUnsportsmanlike                  = 12
 	FoulTypeHangingTechnical                 = 13
@@ -62,7 +62,7 @@ var (
 		FoulTypeInbound:                 "inbound",
 		FoulTypeAwayFromPlay:            "away from play",
 		FoulTypePunching:                "punching",
-		FoulTypeCP:                      "other",
+		FoulTypeClearPath:               "clear path",
 		FoulTypeTechnical:               "technical",
 		FoulTypeUnsportsmanlike:         "unsportsmanlike",
 		FoulTypeHangingTechnical:        "hanging technical",
