@@ -5,6 +5,32 @@ import (
 	"strings"
 )
 
+const (
+	ShotTypeNone ShotType = iota
+	ShotTypeJump
+	ShotTypeHook
+	ShotTypeLayup
+	ShotTypeDunk
+	ShotTypeRunning
+	ShotTypeDriving
+	ShotTypeAlleyOop
+	ShotTypeReverse
+	ShotTypeTurnaround
+	ShotTypeFadeaway
+	ShotTypeBank
+	ShotTypeFingerRoll
+	ShotTypePutBack
+	ShotTypeFloating
+	ShotTypePullUp
+	ShotTypeStepBack
+	ShotTypeTipIn
+	ShotTypeCutting
+)
+
+// ShotType is an enum of attributes of a shot attempt. Ex: was it a layup?
+// a dunk? bank shot? put back? etc.
+type ShotType int
+
 var (
 	shotTypeToString = map[ShotType]string{
 		ShotTypeNone:       "no",
@@ -29,10 +55,6 @@ var (
 	}
 )
 
-// ShotType is an enum of attributes of a shot attempt. Ex: was it a layup?
-// a dunk? bank shot? put back? etc.
-type ShotType int
-
 func (st ShotType) String() string {
 	if s, ok := shotTypeToString[st]; ok {
 		return s
@@ -53,27 +75,13 @@ func (st ShotType) Value() (driver.Value, error) {
 	return string(b), nil
 }
 
-const (
-	ShotTypeNone ShotType = iota
-	ShotTypeJump
-	ShotTypeHook
-	ShotTypeLayup
-	ShotTypeDunk
-	ShotTypeRunning
-	ShotTypeDriving
-	ShotTypeAlleyOop
-	ShotTypeReverse
-	ShotTypeTurnaround
-	ShotTypeFadeaway
-	ShotTypeBank
-	ShotTypeFingerRoll
-	ShotTypePutBack
-	ShotTypeFloating
-	ShotTypePullUp
-	ShotTypeStepBack
-	ShotTypeTipIn
-	ShotTypeCutting
-)
+// Shot describes a shot attempt.
+type Shot struct {
+	Made            bool            `json:"made"`
+	PointsScored    int             `json:"points_scored"`
+	PointsAttempted int             `json:"points_attempted"`
+	Description     ShotDescription `json:"description"`
+}
 
 // ShotDescription describes a shot as a slice of ShotTypes.
 type ShotDescription []ShotType

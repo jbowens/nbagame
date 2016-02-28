@@ -44,6 +44,7 @@ const (
 	TurnoverPlayerOutOfBounds                 = 43
 	TurnoverTooManyPlayers                    = 44
 	TurnoverOutOfBoundsBadPass                = 45
+	TurnoverStealLostBall                     = 52
 )
 
 func (t TurnoverType) String() string {
@@ -101,5 +102,6 @@ var (
 		TurnoverPlayerOutOfBounds:    "player out of bounds",
 		TurnoverTooManyPlayers:       "too many players",
 		TurnoverOutOfBoundsBadPass:   "out of bounds bad pass",
+		TurnoverStealLostBall:        "steal lost ball",
 	}
 )

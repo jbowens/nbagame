@@ -7,37 +7,20 @@ import (
 
 var (
 	eventTypeToString = map[EventType]string{
-		Other:        "other",
-		Foul:         "foul",
-		FreeThrow:    "free_throw",
-		JumpBall:     "jump_ball",
-		Rebound:      "rebound",
-		ShotAttempt:  "shot_attempt",
-		Steal:        "steal",
-		Substitution: "substitution",
-		Timeout:      "timeout",
-		Turnover:     "turnover",
-		Violation:    "violation",
-	}
-	shotAttemptAttributeToString = map[ShotAttemptAttribute]string{
-		Blocked:      "blocked",
-		Dunk:         "dunk",
-		Fadeaway:     "fadeaway",
-		FingerRoll:   "finger_roll",
-		Floater:      "floater",
-		Hook:         "hook",
-		JumpShot:     "jump_shot",
-		Layup:        "layup",
-		Missed:       "missed",
-		PutBack:      "put_back",
-		PullUp:       "pull_up",
-		Reverse:      "reverse",
-		StepBack:     "step_back",
-		ThreePointer: "three_pointer",
-		TipIn:        "tip_in",
-		Turnaround:   "turnaround",
-		WhileDriving: "while_driving",
-		WhileRunning: "while_running",
+		EventTypeOther:        "other",
+		EventTypeMadeShot:     "made shot",
+		EventTypeMissedShot:   "missed shot",
+		EventTypeFreeThrow:    "free throw",
+		EventTypeRebound:      "rebound",
+		EventTypeTurnover:     "turnover",
+		EventTypeFoul:         "foul",
+		EventTypeViolation:    "violation",
+		EventTypeSubstitution: "substitution",
+		EventTypeTimeout:      "timeout",
+		EventTypeJumpball:     "jumpball",
+		EventTypeEjection:     "ejection",
+		EventTypePeriodStart:  "period start",
+		EventTypePeriodEnd:    "period end",
 	}
 )
 
@@ -45,17 +28,20 @@ var (
 type EventType int
 
 const (
-	Other EventType = iota
-	Foul
-	FreeThrow
-	JumpBall
-	Rebound
-	ShotAttempt
-	Steal
-	Substitution
-	Timeout
-	Turnover
-	Violation
+	EventTypeOther        EventType = 0
+	EventTypeMadeShot               = 1
+	EventTypeMissedShot             = 2
+	EventTypeFreeThrow              = 3
+	EventTypeRebound                = 4
+	EventTypeTurnover               = 5
+	EventTypeFoul                   = 6
+	EventTypeViolation              = 7
+	EventTypeSubstitution           = 8
+	EventTypeTimeout                = 9
+	EventTypeJumpball               = 10
+	EventTypeEjection               = 11
+	EventTypePeriodStart            = 12
+	EventTypePeriodEnd              = 13
 )
 
 func (et EventType) String() string {
@@ -77,63 +63,21 @@ func (et EventType) Value() (driver.Value, error) {
 	return string(b), nil
 }
 
-// ShotAttemptAttribute is an enum for attributes providing more details about a shot
-// attempt event, for ex. was it a layup? a dunk? alleyoop? was it blocked?
-type ShotAttemptAttribute int
-
-const (
-	AlleyOop ShotAttemptAttribute = iota
-	Blocked
-	Dunk
-	Fadeaway
-	FingerRoll
-	Floater
-	Hook
-	JumpShot
-	Layup
-	Missed
-	PutBack
-	PullUp
-	Reverse
-	StepBack
-	ThreePointer
-	TipIn
-	Turnaround
-	WhileDriving
-	WhileRunning
-)
-
-func (saa ShotAttemptAttribute) String() string {
-	if s, ok := shotAttemptAttributeToString[saa]; ok {
-		return s
-	}
-	return "unknown"
-}
-
-func (saa ShotAttemptAttribute) MarshalText() ([]byte, error) {
-	return []byte(strings.Replace(saa.String(), " ", "_", -1)), nil
-}
-
-func (saa ShotAttemptAttribute) Value() (driver.Value, error) {
-	b, err := saa.MarshalText()
-	if err != nil {
-		return nil, err
-	}
-	return string(b), nil
-}
-
 // Event describes an event that occurs within a game.
 // TODO(jackson): Figure out how to map to the database model.
 type Event struct {
-	GameID          GameID                 `json:"game_id"`
-	Types           []EventType            `json:"types"`
-	Period          int                    `json:"period"`
-	Score           *Score                 `json:"score,omitempty"`
-	WallClock       string                 `json:"wall_clock"`
-	PeriodTime      string                 `json:"period_time"`
-	Descriptions    []string               `json:"descriptions"`
-	InvolvedPlayers []*PlayerDescription   `json:"involved_players,omitempty"`
-	ShotAttributes  []ShotAttemptAttribute `json:"shot_attributes,omitempty"`
+	GameID GameID    `json:"game_id"`
+	Type   EventType `json:"type"`
+	Period int       `json:"period"`
+	Shot   *Shot     `json:"shot,omitempty"`
+
+	// DEPRECATED
+	Score           *Score               `json:"score,omitempty"`
+	WallClock       string               `json:"wall_clock"`
+	Descriptions    []string             `json:"descriptions"`
+	InvolvedPlayers []*PlayerDescription `json:"involved_players,omitempty"`
+	Types           []EventType          `json:"types"`
+	PeriodTime      string               `json:"period_time"`
 }
 
 func (e *Event) Is(typ EventType) bool {

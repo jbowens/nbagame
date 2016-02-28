@@ -14,48 +14,6 @@ const (
 	VisitorPlayer PersonType = 5
 )
 
-var (
-	eventTypeMapping = map[string]data.EventType{
-		"REBOUND":    data.Rebound,
-		"Rebound":    data.Rebound,
-		"SUB:":       data.Substitution,
-		"STEAL":      data.Steal,
-		"Turnover":   data.Turnover,
-		"Shot":       data.ShotAttempt,
-		"Layup":      data.ShotAttempt,
-		"Dunk":       data.ShotAttempt,
-		"Jumper":     data.ShotAttempt,
-		"Timeout":    data.Timeout,
-		"FOUL":       data.Foul,
-		"Foul":       data.Foul,
-		"Free Throw": data.FreeThrow,
-		"Violation":  data.Violation,
-		"Jump Ball":  data.JumpBall,
-	}
-
-	shotAttributeMapping = map[string]data.ShotAttemptAttribute{
-		"Alley Oop":        data.AlleyOop,
-		"BLOCK":            data.Blocked,
-		"Dunk":             data.Dunk,
-		"Fadeaway":         data.Fadeaway,
-		"Finger Roll":      data.FingerRoll,
-		"Floating":         data.Floater,
-		"Hook Shot":        data.Hook,
-		"Jump Shot":        data.JumpShot,
-		"Layup":            data.Layup,
-		"MISS":             data.Missed,
-		"Putback":          data.PutBack,
-		"Pullup Jump Shot": data.PullUp,
-		"Reverse":          data.Reverse,
-		"Step Back":        data.StepBack,
-		"3PT":              data.ThreePointer,
-		"Tip Shot":         data.TipIn,
-		"Turnaround":       data.Turnaround,
-		"Driving":          data.WhileDriving,
-		"Running":          data.WhileRunning,
-	}
-)
-
 // PlayByPlayParams defines parameters for a PlayByPlay request.
 // http://stats.nba.com/stats/playbyplayv2?EndPeriod=10&EndRange=55800&GameID=0021401229&RangeType=2&Season=2014-15&SeasonType=Regular+Season&StartPeriod=1&StartRange=0
 type PlayByPlayParams struct {
@@ -129,7 +87,6 @@ type PlayByPlayRow struct {
 func (r *PlayByPlayRow) ToData() *data.Event {
 	event := &data.Event{
 		GameID:          data.GameID(r.GameID),
-		Types:           r.EventTypes(),
 		Period:          r.Period,
 		Score:           r.Score(),
 		WallClock:       r.WallClockTimeString,
@@ -162,34 +119,7 @@ func (r *PlayByPlayRow) ToData() *data.Event {
 		})
 	}
 
-	if event.Is(data.ShotAttempt) {
-		for str, attr := range shotAttributeMapping {
-			if r.DescriptionContains(str) {
-				event.ShotAttributes = append(event.ShotAttributes, attr)
-			}
-		}
-	}
-
 	return event
-}
-
-func (r *PlayByPlayRow) EventTypes() (typs []data.EventType) {
-	eventTypes := make(map[data.EventType]struct{})
-
-	for str, typ := range eventTypeMapping {
-		if r.DescriptionContains(str) {
-			eventTypes[typ] = struct{}{}
-		}
-	}
-
-	for typ, _ := range eventTypes {
-		typs = append(typs, typ)
-	}
-
-	if len(typs) == 0 {
-		typs = append(typs, data.Other)
-	}
-	return typs
 }
 
 func (r *PlayByPlayRow) DescriptionContains(substr string) bool {
