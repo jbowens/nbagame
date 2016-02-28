@@ -17,7 +17,7 @@ var (
 		EventTypeViolation:    "violation",
 		EventTypeSubstitution: "substitution",
 		EventTypeTimeout:      "timeout",
-		EventTypeJumpball:     "jumpball",
+		EventTypeJumpBall:     "jump ball",
 		EventTypeEjection:     "ejection",
 		EventTypePeriodStart:  "period start",
 		EventTypePeriodEnd:    "period end",
@@ -38,7 +38,7 @@ const (
 	EventTypeViolation              = 7
 	EventTypeSubstitution           = 8
 	EventTypeTimeout                = 9
-	EventTypeJumpball               = 10
+	EventTypeJumpBall               = 10
 	EventTypeEjection               = 11
 	EventTypePeriodStart            = 12
 	EventTypePeriodEnd              = 13
