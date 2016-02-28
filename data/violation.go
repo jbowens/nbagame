@@ -1,5 +1,10 @@
 package data
 
+import (
+	"database/sql/driver"
+	"strings"
+)
+
 // ViolationType describes the type of a violation.
 type ViolationType int
 
@@ -18,6 +23,18 @@ func (vt ViolationType) String() string {
 		return s
 	}
 	return "unknown"
+}
+
+func (vt ViolationType) MarshalText() ([]byte, error) {
+	return []byte(strings.Replace(vt.String(), " ", "_", -1)), nil
+}
+
+func (vt ViolationType) Value() (driver.Value, error) {
+	b, err := vt.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+	return string(b), nil
 }
 
 var (

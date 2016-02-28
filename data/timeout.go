@@ -1,5 +1,10 @@
 package data
 
+import (
+	"database/sql/driver"
+	"strings"
+)
+
 // TimeoutType describes the type of a timeout.
 type TimeoutType int
 
@@ -15,6 +20,18 @@ func (tt TimeoutType) String() string {
 		return s
 	}
 	return "unknown"
+}
+
+func (tt TimeoutType) MarshalText() ([]byte, error) {
+	return []byte(strings.Replace(tt.String(), " ", "_", -1)), nil
+}
+
+func (tt TimeoutType) Value() (driver.Value, error) {
+	b, err := tt.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+	return string(b), nil
 }
 
 var (

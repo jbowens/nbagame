@@ -1,5 +1,10 @@
 package data
 
+import (
+	"database/sql/driver"
+	"strings"
+)
+
 // FoulType describes the type of foul.
 // See http://www.nba.com/analysis/rules_12.html
 type FoulType int
@@ -34,6 +39,18 @@ func (ft FoulType) String() string {
 		return s
 	}
 	return "unknown"
+}
+
+func (ft FoulType) MarshalText() ([]byte, error) {
+	return []byte(strings.Replace(ft.String(), " ", "_", -1)), nil
+}
+
+func (ft FoulType) Value() (driver.Value, error) {
+	b, err := ft.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+	return string(b), nil
 }
 
 var (

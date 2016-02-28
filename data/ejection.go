@@ -1,5 +1,10 @@
 package data
 
+import (
+	"database/sql/driver"
+	"strings"
+)
+
 // TimeoutType describes the type of ejection.
 type EjectionType int
 
@@ -16,6 +21,18 @@ func (et EjectionType) String() string {
 		return s
 	}
 	return "unknown"
+}
+
+func (et EjectionType) MarshalText() ([]byte, error) {
+	return []byte(strings.Replace(et.String(), " ", "_", -1)), nil
+}
+
+func (et EjectionType) Value() (driver.Value, error) {
+	b, err := et.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+	return string(b), nil
 }
 
 var (
