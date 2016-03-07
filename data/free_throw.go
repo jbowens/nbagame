@@ -9,7 +9,8 @@ import (
 type FreeThrowType int
 
 const (
-	FreeThrowOneOfOne          FreeThrowType = 10
+	FreeThrowUnknown           FreeThrowType = 0
+	FreeThrowOneOfOne                        = 10
 	FreeThrowOneOfTwo                        = 11
 	FreeThrowTwoOfTwo                        = 12
 	FreeThrowOneOfThree                      = 13
@@ -19,6 +20,7 @@ const (
 	FreeThrowFlagrantOneOfTwo                = 18
 	FreeThrowFlagrantTwoOfTwo                = 19
 	FreeThrowFlagrantOneOfOne                = 20
+	FreeThrowTechincalOneOfTwo               = 21
 	FreeThrowClearPathOneOfTwo               = 25
 	FreeThrowClearPathTwoOfTwo               = 26
 )
@@ -44,6 +46,7 @@ func (ft FreeThrowType) Value() (driver.Value, error) {
 
 var (
 	freeThrowToString = map[FreeThrowType]string{
+		FreeThrowUnknown:           "unknown",
 		FreeThrowOneOfOne:          "one of one",
 		FreeThrowOneOfTwo:          "one of two",
 		FreeThrowTwoOfTwo:          "two of two",
@@ -54,6 +57,7 @@ var (
 		FreeThrowFlagrantOneOfTwo:  "flagrant one of two",
 		FreeThrowFlagrantTwoOfTwo:  "flagrant two of two",
 		FreeThrowFlagrantOneOfOne:  "flagrant one of one",
+		FreeThrowTechincalOneOfTwo: "technical one of two",
 		FreeThrowClearPathOneOfTwo: "clear path one of two",
 		FreeThrowClearPathTwoOfTwo: "clear path two of two",
 	}

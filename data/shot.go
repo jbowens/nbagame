@@ -25,6 +25,7 @@ const (
 	ShotTypeStepBack
 	ShotTypeTipIn
 	ShotTypeCutting
+	ShotTypeFollowUp
 )
 
 // ShotType is an enum of attributes of a shot attempt. Ex: was it a layup?
@@ -52,6 +53,7 @@ var (
 		ShotTypeStepBack:   "step back",
 		ShotTypeTipIn:      "tip in",
 		ShotTypeCutting:    "cutting",
+		ShotTypeFollowUp:   "follow up",
 	}
 )
 

@@ -25,12 +25,14 @@ const (
 	TurnoverInbound                           = 12
 	TurnoverBackcourt                         = 13
 	TurnoverOffensiveGoaltending              = 15
+	TurnoverIsolationViolation                = 16
 	TurnoverLaneViolation                     = 17
 	TurnoverJumpBallViolation                 = 18
 	TurnoverKickedBall                        = 19
 	TurnoverIllegalAssist                     = 20
 	TurnoverPalming                           = 21
 	TurnoverDoublePersonal                    = 23
+	TurnoverStolenPass                        = 31
 	TurnoverOppositeBasket                    = 32
 	TurnoverPunchedBall                       = 33
 	TurnoverSwingingElbows                    = 34
@@ -41,6 +43,7 @@ const (
 	TurnoverStepOutOfBounds                   = 39
 	TurnoverOutOfBoundsLostBall               = 40
 	TurnoverSteal                             = 41
+	TurnoverTeam                              = 42
 	TurnoverPlayerOutOfBounds                 = 43
 	TurnoverTooManyPlayers                    = 44
 	TurnoverOutOfBoundsBadPass                = 45
@@ -83,12 +86,14 @@ var (
 		TurnoverInbound:              "inbound",
 		TurnoverBackcourt:            "backcourt violation",
 		TurnoverOffensiveGoaltending: "offensive goaltending",
+		TurnoverIsolationViolation:   "isolation violation",
 		TurnoverLaneViolation:        "lane violation",
 		TurnoverJumpBallViolation:    "jump ball violation",
 		TurnoverKickedBall:           "kicked ball",
 		TurnoverIllegalAssist:        "illegal assist",
 		TurnoverPalming:              "palming",
 		TurnoverDoublePersonal:       "double personal",
+		TurnoverStolenPass:           "stolen pass",
 		TurnoverOppositeBasket:       "opposite basket",
 		TurnoverPunchedBall:          "punched ball",
 		TurnoverSwingingElbows:       "swinging elbows",
@@ -99,6 +104,7 @@ var (
 		TurnoverStepOutOfBounds:      "step out of bounds",
 		TurnoverOutOfBoundsLostBall:  "out of bounds lost ball",
 		TurnoverSteal:                "steal",
+		TurnoverTeam:                 "team",
 		TurnoverPlayerOutOfBounds:    "player out of bounds",
 		TurnoverTooManyPlayers:       "too many players",
 		TurnoverOutOfBoundsBadPass:   "out of bounds bad pass",
