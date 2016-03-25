@@ -64,29 +64,21 @@ func (et EventType) Value() (driver.Value, error) {
 }
 
 // Event describes an event that occurs within a game.
-// TODO(jackson): Figure out how to map to the database model.
 type Event struct {
-	GameID GameID    `json:"game_id"`
-	Type   EventType `json:"type"`
-	Period int       `json:"period"`
-	Shot   *Shot     `json:"shot,omitempty"`
-
-	// DEPRECATED
-	Score           *Score               `json:"score,omitempty"`
-	WallClock       string               `json:"wall_clock"`
-	Descriptions    []string             `json:"descriptions"`
-	InvolvedPlayers []*PlayerDescription `json:"involved_players,omitempty"`
-	Types           []EventType          `json:"types"`
-	PeriodTime      string               `json:"period_time"`
-}
-
-func (e *Event) Is(typ EventType) bool {
-	for _, t := range e.Types {
-		if t == typ {
-			return true
-		}
-	}
-	return false
+	GameID             GameID             `json:"game_id"`
+	Number             int                `json:"number"`
+	Type               EventType          `json:"type"`
+	Period             int                `json:"period"`
+	Score              *Score             `json:"score,omitempty"`
+	PeriodTimeSeconds  int                `json:"period_time_secs"`
+	WallClockString    string             `json:"wall_clock,omitempty"`
+	Player1            *PlayerDescription `json:"player1,omitempty"`
+	Player2            *PlayerDescription `json:"player2,omitempty"`
+	Player3            *PlayerDescription `json:"player3,omitempty"`
+	HomeDescription    *string            `json:"home_description,omitempty"`
+	NeutralDescription *string            `json:"neutral_description,omitempty"`
+	VisitorDescription *string            `json:"visitor_description,omitempty"`
+	Shot               *Shot              `json:"shot,omitempty"`
 }
 
 type Score struct {

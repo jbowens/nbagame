@@ -35,11 +35,9 @@ type PlayByPlayResponse struct {
 
 func (resp *PlayByPlayResponse) ToData() []*data.Event {
 	var events []*data.Event
-
 	for _, row := range resp.PlayByPlay {
 		events = append(events, row.ToData())
 	}
-
 	return events
 }
 
@@ -85,40 +83,44 @@ type PlayByPlayRow struct {
 }
 
 func (r *PlayByPlayRow) ToData() *data.Event {
-	event := &data.Event{
-		GameID:          data.GameID(r.GameID),
-		Period:          r.Period,
-		Score:           r.Score(),
-		WallClock:       r.WallClockTimeString,
-		PeriodTime:      r.PeriodClockTimeString,
-		Descriptions:    all(r.HomeDescription, r.NeutralDescription, r.VisitorDescription),
-		InvolvedPlayers: []*data.PlayerDescription{},
-	}
-
+	var player1, player2, player3 *data.PlayerDescription
 	if r.Player1ID != 0 && r.Player1Name != "" && r.Player1TeamID != 0 {
-		event.InvolvedPlayers = append(event.InvolvedPlayers, &data.PlayerDescription{
+		player1 = &data.PlayerDescription{
 			ID:     r.Player1ID,
 			Name:   r.Player1Name,
 			TeamID: r.Player1TeamID,
-		})
+		}
 	}
 
 	if r.Player2ID != 0 && r.Player2Name != "" && r.Player2TeamID != 0 {
-		event.InvolvedPlayers = append(event.InvolvedPlayers, &data.PlayerDescription{
+		player2 = &data.PlayerDescription{
 			ID:     r.Player2ID,
 			Name:   r.Player2Name,
 			TeamID: r.Player2TeamID,
-		})
+		}
 	}
 
 	if r.Player3ID != 0 && r.Player3Name != "" && r.Player3TeamID != 0 {
-		event.InvolvedPlayers = append(event.InvolvedPlayers, &data.PlayerDescription{
+		player3 = &data.PlayerDescription{
 			ID:     r.Player3ID,
 			Name:   r.Player3Name,
 			TeamID: r.Player3TeamID,
-		})
+		}
 	}
 
+	event := &data.Event{
+		GameID:             data.GameID(r.GameID),
+		Period:             r.Period,
+		Score:              r.Score(),
+		PeriodTimeSeconds:  MinuteSecondStringToSeconds(r.PeriodClockTimeString),
+		WallClockString:    r.WallClockTimeString,
+		Player1:            player1,
+		Player2:            player2,
+		Player3:            player3,
+		HomeDescription:    r.HomeDescription,
+		NeutralDescription: r.NeutralDescription,
+		VisitorDescription: r.VisitorDescription,
+	}
 	return event
 }
 
@@ -141,7 +143,6 @@ func (r *PlayByPlayRow) Score() *data.Score {
 	}
 
 	pieces := strings.Split(*r.ScoreString, "-")
-
 	home, err := strconv.Atoi(strings.TrimSpace(pieces[0]))
 	if err != nil {
 		return nil
