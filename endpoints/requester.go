@@ -56,6 +56,7 @@ func (r *Requester) Request(endpoint string, params interface{}, resp interface{
 	if err != nil {
 		return err
 	}
+	defer httpResponse.Body.Close()
 
 	if httpResponse.StatusCode != http.StatusOK {
 		return fmt.Errorf("endpoint `%s` returned status `%s`", endpointURL, httpResponse.Status)
@@ -63,9 +64,6 @@ func (r *Requester) Request(endpoint string, params interface{}, resp interface{
 
 	buf := new(bytes.Buffer)
 	if _, err = buf.ReadFrom(httpResponse.Body); err != nil {
-		return err
-	}
-	if err := httpResponse.Body.Close(); err != nil {
 		return err
 	}
 	response, err := NewResponse(buf.Bytes())
