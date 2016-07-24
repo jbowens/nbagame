@@ -56,7 +56,8 @@ func (db *DB) RecordGameEvent(gameID data.GameID, evt *data.Event) error {
 	}
 	defer txn.Rollback()
 
-	if err := txn.Insert(model); err != nil {
+	err = txn.Upsert(model)
+	if err != nil {
 		return err
 	}
 
