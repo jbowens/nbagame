@@ -61,42 +61,42 @@ func main() {
 					Name:   "games",
 					Usage:  "sync all nba games for a season to the database",
 					Before: before,
-					Action: func(c *cli.Context) {
+					Action: func(c *cli.Context) error {
 						count, err := syncer.SyncAllGames(season(c))
 						if err != nil {
-							fmt.Println("error syncing games: ", err)
-							return
+							return err
 						}
 
 						fmt.Println("Synced", count, "games to the database.")
+						return nil
 					},
 				},
 				{
 					Name:   "teams",
 					Usage:  "sync all nba teams to the database",
 					Before: before,
-					Action: func(c *cli.Context) {
+					Action: func(c *cli.Context) error {
 						count, err := syncer.SyncAllTeams()
 						if err != nil {
-							fmt.Println("error syncing teams: ", err)
-							return
+							return err
 						}
 
 						fmt.Println("Synced", count, "teams to the database.")
+						return nil
 					},
 				},
 				{
 					Name:   "players",
 					Usage:  "sync all nba players to the database",
 					Before: before,
-					Action: func(c *cli.Context) {
+					Action: func(c *cli.Context) error {
 						count, err := syncer.SyncAllPlayers()
 						if err != nil {
-							fmt.Println("error syncing players:", err)
-							return
+							return err
 						}
 
 						fmt.Println("Synced", count, "players to the database.")
+						return nil
 					},
 				},
 			},
