@@ -5,9 +5,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/codegangsta/cli"
+	"github.com/jbowens/nbagame"
 	"github.com/jbowens/nbagame/data"
 	"github.com/jbowens/nbagame/db/sync"
+	"github.com/urfave/cli"
 )
 
 const (
@@ -32,8 +33,17 @@ func before(c *cli.Context) (err error) {
 	syncer, err = newSyncer(c)
 	if syncer != nil {
 		syncer.Logger = logger
+		syncer.SetAPI(nbagame.Season(season(c)))
 	}
 	return err
+}
+
+func season(c *cli.Context) data.Season {
+	if c.NArg() == 0 {
+		return data.CurrentSeason
+	}
+	s := c.Args().Get(0)
+	return data.Season(s)
 }
 
 func main() {
@@ -52,7 +62,7 @@ func main() {
 					Usage:  "sync all nba games for a season to the database",
 					Before: before,
 					Action: func(c *cli.Context) {
-						count, err := syncer.SyncAllGames(data.CurrentSeason)
+						count, err := syncer.SyncAllGames(season(c))
 						if err != nil {
 							fmt.Println("error syncing games: ", err)
 							return
