@@ -110,6 +110,8 @@ func (r *PlayByPlayRow) ToData() *data.Event {
 
 	event := &data.Event{
 		GameID:             data.GameID(r.GameID),
+		Number:             r.EventNumber,
+		Type:               data.EventType(r.EventMessageType),
 		Period:             r.Period,
 		Score:              r.Score(),
 		PeriodTimeSeconds:  MinuteSecondStringToSeconds(r.PeriodClockTimeString),

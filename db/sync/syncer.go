@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	maximumConcurrentRequests = 10
+	maximumConcurrentRequests = 20
 )
 
 // Syncer handles syncing data from the NBA API to a MySQL database.
@@ -220,6 +220,39 @@ func (s *Syncer) SyncGamesWithIDs(season data.Season, gameIDs []data.GameID) (in
 	return len(gameIDs), nil
 }
 
+// SyncPlaysForGames syncs play-by-play histories for games
+// with the provided game IDs.
+func (s *Syncer) SyncPlaysForGames(season data.Season, gameIDs []data.GameID) (int, error) {
+	api := nbagame.Season(season)
+	s.log("going to start syncing play-by-play for %v games", len(gameIDs))
+
+	// Now, we retrieve each individual game concurrently, and insert it into the database.
+	throttler := newThrottler(maximumConcurrentRequests)
+	for _, gameID := range gameIDs {
+		id := gameID
+		throttler.run(func() error {
+			events, err := api.Games.PlayByPlay(string(id))
+			if err != nil {
+				s.log("err retrieving game play-by-play: %s", err)
+				return err
+			}
+
+			for _, evt := range events {
+				err := s.db.RecordGameEvent(id, evt)
+				if err != nil {
+					s.log("err recording game event: %s", err)
+					return err
+				}
+			}
+			return nil
+		})
+	}
+	if err := throttler.wait(); err != nil {
+		return 0, err
+	}
+	return len(gameIDs), nil
+}
+
 // SyncAllGames syncs all the games for the given season to the database.
 // Running twice will update the games and find any new games. Note that
 // this function does not optimize and try to predict which data may need
@@ -230,8 +263,15 @@ func (s *Syncer) SyncAllGames(season data.Season) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-
 	return s.SyncGamesWithIDs(season, gameIDs)
+}
+
+func (s *Syncer) SyncAllGamesPlayByPlay(season data.Season) (int, error) {
+	gameIDs, err := s.allGameIDs(season)
+	if err != nil {
+		return 0, err
+	}
+	return s.SyncPlaysForGames(season, gameIDs)
 }
 
 func (s *Syncer) logError(err error) {

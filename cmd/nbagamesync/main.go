@@ -24,10 +24,10 @@ func main() {
 	season := data.Season(*seasonFlag)
 
 	// Figure out what we should sync based on the arguments.
-	var syncTeams, syncPlayers, syncGames bool
+	var syncTeams, syncPlayers, syncGames, syncPlays bool
 	if flag.NArg() == 0 {
 		// Default to syncing everything if the flag is omitted.
-		syncTeams, syncPlayers, syncGames = true, true, true
+		syncTeams, syncPlayers, syncGames, syncPlays = true, true, true, true
 	}
 	for _, arg := range flag.Args() {
 		switch strings.TrimSpace(strings.ToLower(arg)) {
@@ -37,6 +37,8 @@ func main() {
 			syncPlayers = true
 		case "games":
 			syncGames = true
+		case "plays":
+			syncPlays = true
 		default:
 			fatal(fmt.Errorf("unrecognized argument: `%s`", arg))
 		}
@@ -70,6 +72,14 @@ func main() {
 			fatal(err)
 		}
 		fmt.Println("Synced", count, "games to the database.")
+	}
+
+	if syncPlays {
+		count, err := syncer.SyncAllGamesPlayByPlay(season)
+		if err != nil {
+			fatal(err)
+		}
+		fmt.Println("Synced", count, "games' play-by-plays to the database.")
 	}
 }
 
