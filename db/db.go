@@ -20,6 +20,7 @@ type DB struct {
 	PlayerGameStats *squalor.Model
 	TeamGameStats   *squalor.Model
 	Teams           *squalor.Model
+	Events          *squalor.Model
 }
 
 // WithDSN creates a new connection to an NBAGame database, using
@@ -83,6 +84,9 @@ func (db *DB) init() (err error) {
 	if err != nil {
 		return err
 	}
-
+	db.Events, err = db.DB.BindModel("events", &Event{})
+	if err != nil {
+		return err
+	}
 	return nil
 }
