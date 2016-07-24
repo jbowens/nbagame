@@ -71,6 +71,7 @@ func (resp *ScoreboardResponse) ToData() (games []*data.Game, err error) {
 
 		games = append(games, &data.Game{
 			ID:                row.ParseGameID(),
+			Playoffs:          row.ParseGameID().IsPlayoff(),
 			HomeTeamID:        row.HomeTeamID,
 			VisitorTeamID:     row.VisitorTeamID,
 			Season:            season,

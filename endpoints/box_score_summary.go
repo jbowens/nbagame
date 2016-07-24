@@ -86,9 +86,10 @@ func (r *BoxScoreSummaryResponse) ToData() (*data.GameDetails, error) {
 	details := &data.GameDetails{
 		Game: data.Game{
 			ID:                summary.ParseGameID(),
+			Season:            season,
+			Playoffs:          summary.ParseGameID().IsPlayoff(),
 			HomeTeamID:        summary.HomeTeamID,
 			VisitorTeamID:     summary.VisitorTeamID,
-			Season:            season,
 			Status:            summary.ParseStatus(),
 			LastMeetingGameID: data.GameID(r.LastMeeting[0].LastGameID),
 		},

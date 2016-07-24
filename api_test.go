@@ -27,7 +27,9 @@ func TestGetGamesPlayedByTeam(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
+	for _, id := range gameIDs {
+		t.Log(id)
+	}
 	if len(gameIDs) < 50 {
 		t.Errorf("Expected 50 or more games, but got %v", len(gameIDs))
 	}

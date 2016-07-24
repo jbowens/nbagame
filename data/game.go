@@ -3,6 +3,7 @@ package data
 import (
 	"database/sql/driver"
 	"errors"
+	"strings"
 	"time"
 )
 
@@ -21,20 +22,27 @@ func (id GameID) String() string {
 	return string(id)
 }
 
-func (g GameID) Value() (driver.Value, error) {
-	return string(g), nil
+func (id GameID) Value() (driver.Value, error) {
+	return string(id), nil
 }
 
-func (g *GameID) Scan(src interface{}) error {
+func (id *GameID) Scan(src interface{}) error {
 	switch t := src.(type) {
 	case string:
-		*g = GameID(t)
+		*id = GameID(t)
 	case []byte:
-		*g = GameID(string(t))
+		*id = GameID(string(t))
 	default:
 		return errors.New("Incompatible type for GameID")
 	}
 	return nil
+}
+
+// IsPlayoff returns whether or not the game is a playoff game.
+func (id GameID) IsPlayoff() bool {
+	// Playoff game IDs start with '004', regular season IDs with '002'.
+	// ¯\_(ツ)_/¯
+	return strings.HasPrefix(string(id), "004")
 }
 
 // Date is a wrapper around a time.Time, but only displays
@@ -117,6 +125,7 @@ func (h HomeOrAway) Value() (driver.Value, error) {
 // Game holds basic information about a NBA game.
 type Game struct {
 	ID                GameID     `json:"id,omitempty" db:"id"`
+	Playoffs          bool       `json:"playoff,omitempty" db:"playoffs"`
 	HomeTeamID        int        `json:"home_team_id" db:"home_team_id"`
 	VisitorTeamID     int        `json:"visitor_team_id" db:"visitor_team_id"`
 	Season            Season     `json:"season" db:"season"`

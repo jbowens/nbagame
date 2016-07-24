@@ -129,7 +129,8 @@ type Games struct {
 	client *APIClient
 }
 
-// All returns the game IDs of all of the games played in the season.
+// All returns the game IDs of all of the games played in the season,
+// including playoff games.
 func (c *Games) All() ([]data.GameID, error) {
 	var gameIDs []data.GameID
 	for _, teamID := range teamIDs {
@@ -151,17 +152,21 @@ func (c *Games) Details(gameID string) (*data.GameDetails, error) {
 	}, &resp); err != nil {
 		return nil, err
 	}
-
 	return resp.ToData()
 }
 
 // BoxScore returns the box score for the given game.
 func (c *Games) BoxScore(gameID string) (*data.BoxScore, error) {
+	seasonType := "Regular Season"
+	if data.GameID(gameID).IsPlayoff() {
+		seasonType = "Playoffs"
+	}
+
 	var resp endpoints.BoxScoreTraditionalResponse
 	if err := c.client.Requester.Request("boxscoretraditionalv2", &endpoints.BoxScoreTraditionalParams{
 		GameID:      gameID,
 		Season:      c.client.season.String(),
-		SeasonType:  "Regular Season",
+		SeasonType:  seasonType,
 		StartPeriod: 1,
 		EndPeriod:   10,
 		StartRange:  0,
@@ -181,11 +186,16 @@ func (c *Games) BoxScore(gameID string) (*data.BoxScore, error) {
 
 // PlayByPlay returns a play-by-play list of events for a game.
 func (c *Games) PlayByPlay(gameID string) ([]*data.Event, error) {
+	seasonType := "Regular Season"
+	if data.GameID(gameID).IsPlayoff() {
+		seasonType = "Playoffs"
+	}
+
 	var resp endpoints.PlayByPlayResponse
 	if err := c.client.Requester.Request("playbyplayv2", &endpoints.PlayByPlayParams{
 		GameID:      gameID,
 		Season:      c.client.season.String(),
-		SeasonType:  "RegularSeason",
+		SeasonType:  seasonType,
 		StartPeriod: 1,
 		EndPeriod:   10,
 		StartRange:  0,
@@ -215,7 +225,11 @@ func (c *Games) ByDate(date time.Time) ([]*data.Game, error) {
 // PlayedBy returns the IDs of all games played by the given team so far this
 // year. Unfortunately, the stats.nba.com API does not provide upcoming games.
 func (c *Games) PlayedBy(teamID int) ([]data.GameID, error) {
+	gameIDSet := map[data.GameID]struct{}{}
+
 	var resp endpoints.TeamGameLogResponse
+
+	// Regular season games
 	if err := c.client.Requester.Request("teamgamelog", &endpoints.TeamGameLogParams{
 		LeagueID:   "00",
 		TeamID:     teamID,
@@ -224,8 +238,20 @@ func (c *Games) PlayedBy(teamID int) ([]data.GameID, error) {
 	}, &resp); err != nil {
 		return nil, err
 	}
+	for _, game := range resp.TeamGameLog {
+		gid := data.GameID(game.GameID)
+		gameIDSet[gid] = struct{}{}
+	}
 
-	gameIDSet := map[data.GameID]struct{}{}
+	// Playoff games
+	if err := c.client.Requester.Request("teamgamelog", &endpoints.TeamGameLogParams{
+		LeagueID:   "00",
+		TeamID:     teamID,
+		Season:     c.client.season.String(),
+		SeasonType: "Playoffs",
+	}, &resp); err != nil {
+		return nil, err
+	}
 	for _, game := range resp.TeamGameLog {
 		gid := data.GameID(game.GameID)
 		gameIDSet[gid] = struct{}{}
