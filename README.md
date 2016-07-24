@@ -36,18 +36,22 @@ goose up
 
 Once your database is constructed, `go install ./cmd/...` to install the command-line utilities.
 
-To sync data to the database, run the following commands:
+To sync data to the entire database, run the following command:
 
 ```bash
-nbagame sync teams
-nbagame sync players
-nbagame sync games
+nbagame-sync -season=2015-16
 ```
 
-By default, the command-line tool only loads data from the current season (except for players, which will load all historical players too). If you want to load data from a particular season, add the season identifier as an additional argument like:
+By default, the command-line tool only loads data from the current season (except for players, which will load all historical players too). If you want to load data from a particular season, add the season flag.
 
 ```bash
-nbagame sync games 2015-16
+nbagame-sync -season="2015-16"
+```
+
+If you don't want to sync everything, specify which entities you want to sync as arguments, ex:
+
+```
+nbagame-sync teams games
 ```
 
 Once you've loaded the data, open a MySQL client and try querying. Here's a sample query that calculates average blocks per game by team.
