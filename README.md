@@ -26,17 +26,31 @@ for _, team := range teams {
 
 ## Database Syncing
 
-NBAGame is most useful as a means to populate a MySQL database with up-to-date NBA statistics. The [nbagame/db/sync](https://godoc.org/github.com/jbowens/nbagame/db/sync) package provides a programmatic interface for syncing data. If you don't need the programmatic interface or will be using a language other than go, you can use the command-line tool in the [nbagame/cli](https://github.com/jbowens/nbagame/tree/master/cli) package. First, follow the directions in the [nbagame/db README](https://github.com/jbowens/nbagame/tree/master/db) to setup your MySQL database and your goose dbconf.yml configuration file. Running `goose up` will create the nbagame schema.
+NBAGame is most useful as a means to populate a MySQL database with up-to-date NBA statistics. The [nbagame/db/sync](https://godoc.org/github.com/jbowens/nbagame/db/sync) package provides a programmatic interface for syncing data. If you don't need the programmatic interface or will be using a language other than go, you can use the command-line tool in the [nbagame/cmd](https://github.com/jbowens/nbagame/tree/master/cmd) package. First, follow the directions in the [nbagame/db README](https://github.com/jbowens/nbagame/tree/master/db) to setup your MySQL database and your goose dbconf.yml configuration file. If you have permissions to create new MySQL databases and access them without credentials, you can create the database by running
 
-Once your database is constructed, `cd cli`. You may run any or all of the following commands to sync the data that you care about:
-
-```bash
-go run main.go sync teams
-go run main.go sync players
-go run main.go sync games
+```
+mysql -e "CREATE DATABASE nbagame"
+go get bitbucket.org/liamstask/goose/cmd/goose
+goose up
 ```
 
-By default, the command-line tool only loads data from the current season (except for players, which will load all historical players too). Once you've loaded the data, open a MySQL client and try querying. Here's a sample query that calculates average blocks per game by team.
+Once your database is constructed, `go install ./cmd/...` to install the command-line utilities.
+
+To sync data to the database, run the following commands:
+
+```bash
+nbagame sync teams
+nbagame sync players
+nbagame sync games
+```
+
+By default, the command-line tool only loads data from the current season (except for players, which will load all historical players too). If you want to load data from a particular season, add the season identifier as an additional argument like:
+
+```bash
+nbagame sync games 2015-16
+```
+
+Once you've loaded the data, open a MySQL client and try querying. Here's a sample query that calculates average blocks per game by team.
 
 ```sql
 SELECT teams.id, teams.name, AVG(stats.blocks) AS avg_blocks_per_game

@@ -24,7 +24,7 @@ func env(c *cli.Context) string {
 }
 
 func newSyncer(c *cli.Context) (*sync.Syncer, error) {
-	return sync.New(env(c), "../db")
+	return sync.New(env(c), "./db")
 }
 
 var syncer *sync.Syncer
