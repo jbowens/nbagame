@@ -122,8 +122,20 @@ func (r *PlayByPlayRow) ToData() *data.Event {
 		HomeDescription:    r.HomeDescription,
 		NeutralDescription: r.NeutralDescription,
 		VisitorDescription: r.VisitorDescription,
+		Shot:               r.Shot(),
 	}
 	return event
+}
+
+func (r *PlayByPlayRow) Player1() *data.PlayerDescription {
+	if r.Player1ID != 0 && r.Player1Name != "" && r.Player1TeamID != 0 {
+		return &data.PlayerDescription{
+			ID:     r.Player1ID,
+			Name:   r.Player1Name,
+			TeamID: r.Player1TeamID,
+		}
+	}
+	return nil
 }
 
 func (r *PlayByPlayRow) DescriptionContains(substr string) bool {
@@ -137,6 +149,30 @@ func (r *PlayByPlayRow) DescriptionContains(substr string) bool {
 		return true
 	}
 	return false
+}
+
+func (r *PlayByPlayRow) Shot() *data.Shot {
+	typ := data.EventType(r.EventMessageType)
+	if typ != data.EventTypeMadeShot && typ != data.EventTypeMissedShot {
+		return nil
+	}
+
+	pointsAttempted := 2
+	if r.DescriptionContains("3PT") {
+		pointsAttempted = 3
+	}
+	pointsScored := 0
+	if typ == data.EventTypeMadeShot {
+		pointsScored = pointsAttempted
+	}
+
+	return &data.Shot{
+		Player:          r.Player1(),
+		Made:            typ == data.EventTypeMadeShot,
+		PointsScored:    pointsScored,
+		PointsAttempted: pointsAttempted,
+		Description:     shotActionTypeToShotTypes[r.EventMessageActionType],
+	}
 }
 
 func (r *PlayByPlayRow) Score() *data.Score {

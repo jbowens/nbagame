@@ -39,7 +39,7 @@ Once your database is constructed, `go install ./cmd/...` to install the command
 To sync data to the entire database, run the following command:
 
 ```bash
-nbagamesync -season=2015-16
+nbagamesync -season="2015-16"
 ```
 
 By default, the command-line tool only loads data from the current season (except for players, which will load all historical players too). If you want to load data from a particular season, add the season flag.

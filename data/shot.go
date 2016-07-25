@@ -79,10 +79,11 @@ func (st ShotType) Value() (driver.Value, error) {
 
 // Shot describes a shot attempt.
 type Shot struct {
-	Made            bool            `json:"made"`
-	PointsScored    int             `json:"points_scored"`
-	PointsAttempted int             `json:"points_attempted"`
-	Description     ShotDescription `json:"description"`
+	Player          *PlayerDescription `json:"player"`
+	Made            bool               `json:"made"`
+	PointsScored    int                `json:"points_scored"`
+	PointsAttempted int                `json:"points_attempted"`
+	Description     ShotDescription    `json:"description"`
 }
 
 // ShotDescription describes a shot as a slice of ShotTypes.

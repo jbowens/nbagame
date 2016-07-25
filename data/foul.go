@@ -79,3 +79,8 @@ var (
 		FoulTypeTooManyPlayersTechnical: "too many players technical",
 	}
 )
+
+type Foul struct {
+	Type     FoulType
+	Offender *PlayerDescription
+}
