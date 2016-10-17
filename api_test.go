@@ -12,7 +12,7 @@ const (
 )
 
 func TestGetHistoricalPlayers(t *testing.T) {
-	allPlayers, err := API.Players.Historical()
+	allPlayers, err := DefaultClient.HistoricalPlayers()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -23,7 +23,7 @@ func TestGetHistoricalPlayers(t *testing.T) {
 }
 
 func TestGetGamesPlayedByTeam(t *testing.T) {
-	gameIDs, err := Season(twentyFourteen).Games.PlayedBy(atlantaHawksTeamID)
+	gameIDs, err := DefaultClient.GamesPlayedBy(twentyFourteen, atlantaHawksTeamID)
 	if err != nil {
 		t.Fatal(err)
 	}

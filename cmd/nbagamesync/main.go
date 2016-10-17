@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/jbowens/nbagame"
 	"github.com/jbowens/nbagame/data"
 	"github.com/jbowens/nbagame/db/sync"
 )
@@ -48,7 +47,6 @@ func main() {
 	if err != nil {
 		fatal(err)
 	}
-	syncer.SetAPI(nbagame.Season(season))
 
 	if syncTeams {
 		count, err := syncer.SyncAllTeams()

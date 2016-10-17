@@ -99,7 +99,7 @@ func Continuously(s *Syncer, opts ...ContinuousOption) {
 			}
 
 		case t := <-newC:
-			games, err := s.API().Games.ByDate(t)
+			games, err := s.Client().GamesByDate(t)
 			if err != nil {
 				c.errorFn(err)
 				continue

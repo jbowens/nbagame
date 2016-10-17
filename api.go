@@ -8,9 +8,6 @@ import (
 )
 
 var (
-	// API is the default APIClient with default parameters.
-	API APIClient
-
 	// teamIDs is a slice of all the current NBA teams' team IDs.
 	teamIDs = []int{
 		1610612737, 1610612738, 1610612739, 1610612740, 1610612741, 1610612742,
@@ -21,88 +18,49 @@ var (
 	}
 )
 
-func init() {
-	API = APIClient{
-		Requester: &endpoints.DefaultRequester,
-		season:    data.CurrentSeason,
+var (
+	DefaultClient *Client = &Client{
+		requester: &endpoints.DefaultRequester,
 	}
-	API.Teams = &Teams{client: &API}
-	API.Players = &Players{client: &API}
-	API.Games = &Games{client: &API}
+)
+
+type Client struct {
+	requester *endpoints.Requester
 }
 
-// APIClient is the master API object for interating with the API.
-type APIClient struct {
-	Requester *endpoints.Requester
-	Teams     *Teams
-	Players   *Players
-	Games     *Games
-
-	season data.Season
-}
-
-// Season retrieves the season that this API client is configured to. Not all
-// functions are constrained by the season.
-func (api *APIClient) Season() data.Season {
-	return api.season
-}
-
-// SetSeason sets the season that this API client is configured to. Not all
-// functions are constrained by the season.
-func (api *APIClient) SetSeason(season data.Season) {
-	api.season = season
-}
-
-// Season creates an API client for the given season.
-func Season(season data.Season) *APIClient {
-	api := &APIClient{
-		Requester: &endpoints.DefaultRequester,
-		season:    season,
-	}
-	api.Teams, api.Players, api.Games = &Teams{api}, &Players{api}, &Games{api}
-	return api
-}
-
-type Teams struct {
-	client *APIClient
-}
-
-// All returns a slice of all the current NBA teams.
-func (c *Teams) All() ([]*data.Team, error) {
+// Teams returns a slice of all the current NBA teams.
+func (c *Client) Teams() ([]*data.Team, error) {
 	var resp endpoints.FranchiseHistoryResponse
-	err := c.client.Requester.Request("franchisehistory", &endpoints.FranchiseHistoryParams{
+	err := c.requester.Request("franchisehistory", &endpoints.FranchiseHistoryParams{
 		LeagueID: "00",
 	}, &resp)
 	return resp.Present(), err
 }
 
-type Players struct {
-	client *APIClient
-}
-
-// All retrieves a slice of all players in the NBA in the current season.
-func (c *Players) All() ([]*data.Player, error) {
+// Players retrieves a slice of all players in the NBA in the provided
+// season.
+func (c *Client) Players(season data.Season) ([]*data.Player, error) {
 	params := endpoints.CommonAllPlayersParams{
 		LeagueID:            "00",
-		Season:              c.client.season.String(),
+		Season:              season.String(),
 		IsOnlyCurrentSeason: 1,
 	}
 	var resp endpoints.CommonAllPlayersResponse
-	if err := c.client.Requester.Request("commonallplayers", &params, &resp); err != nil {
+	if err := c.requester.Request("commonallplayers", &params, &resp); err != nil {
 		return nil, err
 	}
 	return resp.Present(), nil
 }
 
-// Historical returns a slice of all players from all time.
-func (c *Players) Historical() ([]*data.Player, error) {
+// HistoricalPlayers returns a slice of all players from all time.
+func (c *Client) HistoricalPlayers() ([]*data.Player, error) {
 	params := endpoints.CommonAllPlayersParams{
 		LeagueID:            "00",
-		Season:              c.client.season.String(),
+		Season:              "2014-15", // arbitrary
 		IsOnlyCurrentSeason: 0,
 	}
 	var resp endpoints.CommonAllPlayersResponse
-	if err := c.client.Requester.Request("commonallplayers", &params, &resp); err != nil {
+	if err := c.requester.Request("commonallplayers", &params, &resp); err != nil {
 		return nil, err
 	}
 	return resp.Present(), nil
@@ -110,9 +68,9 @@ func (c *Players) Historical() ([]*data.Player, error) {
 
 // Details returns detailed information about a player. It does not include
 // stats about the player's performance.
-func (c *Players) Details(playerID int) (*data.PlayerDetails, error) {
+func (c *Client) PlayerDetails(playerID int) (*data.PlayerDetails, error) {
 	var resp endpoints.CommonPlayerInfoResponse
-	if err := c.client.Requester.Request("commonplayerinfo", &endpoints.CommonPlayerInfoParams{
+	if err := c.requester.Request("commonplayerinfo", &endpoints.CommonPlayerInfoParams{
 		LeagueID: "00",
 		PlayerID: playerID,
 	}, &resp); err != nil {
@@ -125,16 +83,12 @@ func (c *Players) Details(playerID int) (*data.PlayerDetails, error) {
 	return resp.CommonPlayerInfo[0].ToPlayerDetails()
 }
 
-type Games struct {
-	client *APIClient
-}
-
-// All returns the game IDs of all of the games played in the season,
+// Games returns the game IDs of all of the games played in the season,
 // including playoff games.
-func (c *Games) All() ([]data.GameID, error) {
+func (c *Client) Games(season data.Season) ([]data.GameID, error) {
 	var gameIDs []data.GameID
 	for _, teamID := range teamIDs {
-		teamGameIDs, err := c.PlayedBy(teamID)
+		teamGameIDs, err := c.GamesPlayedBy(season, teamID)
 		if err != nil {
 			return nil, err
 		}
@@ -144,10 +98,10 @@ func (c *Games) All() ([]data.GameID, error) {
 	return gameIDs, nil
 }
 
-// Details returns detailed information about the given game.
-func (c *Games) Details(gameID string) (*data.GameDetails, error) {
+// GameDetails returns detailed information about the given game.
+func (c *Client) GameDetails(gameID string) (*data.GameDetails, error) {
 	var resp endpoints.BoxScoreSummaryResponse
-	if err := c.client.Requester.Request("boxscoresummaryv2", &endpoints.BoxScoreSummaryParams{
+	if err := c.requester.Request("boxscoresummaryv2", &endpoints.BoxScoreSummaryParams{
 		GameID: gameID,
 	}, &resp); err != nil {
 		return nil, err
@@ -156,16 +110,16 @@ func (c *Games) Details(gameID string) (*data.GameDetails, error) {
 }
 
 // BoxScore returns the box score for the given game.
-func (c *Games) BoxScore(gameID string) (*data.BoxScore, error) {
+func (c *Client) BoxScore(season data.Season, gameID string) (*data.BoxScore, error) {
 	seasonType := "Regular Season"
 	if data.GameID(gameID).IsPlayoff() {
 		seasonType = "Playoffs"
 	}
 
 	var resp endpoints.BoxScoreTraditionalResponse
-	if err := c.client.Requester.Request("boxscoretraditionalv2", &endpoints.BoxScoreTraditionalParams{
+	if err := c.requester.Request("boxscoretraditionalv2", &endpoints.BoxScoreTraditionalParams{
 		GameID:      gameID,
-		Season:      c.client.season.String(),
+		Season:      season.String(),
 		SeasonType:  seasonType,
 		StartPeriod: 1,
 		EndPeriod:   10,
@@ -175,7 +129,6 @@ func (c *Games) BoxScore(gameID string) (*data.BoxScore, error) {
 	}, &resp); err != nil {
 		return nil, err
 	}
-
 	if len(resp.TeamStats) == 0 {
 		return nil, nil
 	}
@@ -184,17 +137,17 @@ func (c *Games) BoxScore(gameID string) (*data.BoxScore, error) {
 	return &data.BoxScore{teamStats, playerStats}, nil
 }
 
-// PlayByPlay returns a play-by-play list of events for a game.
-func (c *Games) PlayByPlay(gameID string) ([]*data.Event, error) {
+// GamePlayByPlay returns a play-by-play list of events for a game.
+func (c *Client) GamePlayByPlay(season data.Season, gameID string) ([]*data.Event, error) {
 	seasonType := "Regular Season"
 	if data.GameID(gameID).IsPlayoff() {
 		seasonType = "Playoffs"
 	}
 
 	var resp endpoints.PlayByPlayResponse
-	if err := c.client.Requester.Request("playbyplayv2", &endpoints.PlayByPlayParams{
+	if err := c.requester.Request("playbyplayv2", &endpoints.PlayByPlayParams{
 		GameID:      gameID,
-		Season:      c.client.season.String(),
+		Season:      season.String(),
 		SeasonType:  seasonType,
 		StartPeriod: 1,
 		EndPeriod:   10,
@@ -204,36 +157,35 @@ func (c *Games) PlayByPlay(gameID string) ([]*data.Event, error) {
 	}, &resp); err != nil {
 		return nil, err
 	}
-
 	return resp.ToData(), nil
 }
 
-// ByDate retrieves all the NBA games happening on the given date.
-func (c *Games) ByDate(date time.Time) ([]*data.Game, error) {
+// GamesByDate retrieves all the NBA games happening on the given date.
+func (c *Client) GamesByDate(date time.Time) ([]*data.Game, error) {
 	var resp endpoints.ScoreboardResponse
-	if err := c.client.Requester.Request("scoreboardV2", &endpoints.ScoreboardParams{
+	if err := c.requester.Request("scoreboardV2", &endpoints.ScoreboardParams{
 		LeagueID:  "00",
 		DayOffset: 0,
 		GameDate:  date.Format("01/02/2006"),
 	}, &resp); err != nil {
 		return nil, err
 	}
-
 	return resp.ToData()
 }
 
-// PlayedBy returns the IDs of all games played by the given team so far this
-// year. Unfortunately, the stats.nba.com API does not provide upcoming games.
-func (c *Games) PlayedBy(teamID int) ([]data.GameID, error) {
+// GamesPlayedBy returns the IDs of all games played by the given team so far
+// in the provided season. Unfortunately, the stats.nba.com API does not
+// provide upcoming games.
+func (c *Client) GamesPlayedBy(season data.Season, teamID int) ([]data.GameID, error) {
 	gameIDSet := map[data.GameID]struct{}{}
 
 	var resp endpoints.TeamGameLogResponse
 
 	// Regular season games
-	if err := c.client.Requester.Request("teamgamelog", &endpoints.TeamGameLogParams{
+	if err := c.requester.Request("teamgamelog", &endpoints.TeamGameLogParams{
 		LeagueID:   "00",
 		TeamID:     teamID,
-		Season:     c.client.season.String(),
+		Season:     season.String(),
 		SeasonType: "Regular Season",
 	}, &resp); err != nil {
 		return nil, err
@@ -244,10 +196,10 @@ func (c *Games) PlayedBy(teamID int) ([]data.GameID, error) {
 	}
 
 	// Playoff games
-	if err := c.client.Requester.Request("teamgamelog", &endpoints.TeamGameLogParams{
+	if err := c.requester.Request("teamgamelog", &endpoints.TeamGameLogParams{
 		LeagueID:   "00",
 		TeamID:     teamID,
-		Season:     c.client.season.String(),
+		Season:     season.String(),
 		SeasonType: "Playoffs",
 	}, &resp); err != nil {
 		return nil, err
