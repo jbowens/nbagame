@@ -14,7 +14,7 @@ If you're just looking for an API for the NBA, check out the [nbaapi.com repo](h
 The endpoints exposed by nba.com are not intended for public consumption, and no public documentation exists. This package attempts to wrap these endpoints in a clean, well-documented interface.
 
 ```go
-teams, err := API.Teams.All()
+teams, err := nbagame.Client.Teams()
 if err != nil {
   panic(err)
 }
